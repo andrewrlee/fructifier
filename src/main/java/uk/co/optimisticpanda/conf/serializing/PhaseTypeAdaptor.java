@@ -1,33 +1,27 @@
-package uk.co.optimisticpanda.config.serializing.typeadaptors;
+package uk.co.optimisticpanda.conf.serializing;
 
 import java.io.IOException;
 import java.util.Set;
 
-import uk.co.optimisticpanda.conf.ConfigurationException;
 import uk.co.optimisticpanda.conf.Phase;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.config.serializing.ReflectionUtil;
-import uk.co.optimisticpanda.config.serializing.ReflectionUtil.GetterCallBack;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
+import uk.co.optimisticpanda.util.ConfigurationException;
+import uk.co.optimisticpanda.util.ReflectionUtil;
+import uk.co.optimisticpanda.util.ReflectionUtil.GetterCallBack;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 public class PhaseTypeAdaptor extends TypeAdaptorRegistration<Phase> {
 
-	private final Gson gson;
-	private final TypeAdapterFactory parent;
 	private final RegisteredExtensions registeredExtensions;
 
-	public PhaseTypeAdaptor(Gson gson, TypeAdapterFactory parent, RegisteredExtensions registeredExtensions) {
-		this.gson = gson;
-		this.parent = parent;
+	public PhaseTypeAdaptor(RegisteredExtensions registeredExtensions) {
 		this.registeredExtensions = registeredExtensions;
 	}
 
@@ -35,7 +29,7 @@ public class PhaseTypeAdaptor extends TypeAdaptorRegistration<Phase> {
 	 * Write the phase out, using it's accessor's rather than fields to provide
 	 * the attributes and their values
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked","rawtypes"})
 	@Override
 	public void write(final JsonWriter out, Phase phase) throws IOException {
 		phase.setPhaseType(registeredExtensions.getByPhaseType(phase.getClass()));
@@ -43,9 +37,7 @@ public class PhaseTypeAdaptor extends TypeAdaptorRegistration<Phase> {
 		ReflectionUtil.invokeGetters(phase.getClass(), phase, new GetterCallBack() {
 			public void visit(String name, Object value) throws Exception {
 				if (value != null) {
-					TypeToken<?> token = TypeToken.get(value.getClass());
-					@SuppressWarnings("rawtypes")
-					TypeAdapter adapter = gson.getAdapter(token);
+					TypeAdapter adapter = gson.getAdapter(TypeToken.get(value.getClass()));
 					out.name(name);
 					adapter.write(out, value);
 				}
@@ -58,7 +50,7 @@ public class PhaseTypeAdaptor extends TypeAdaptorRegistration<Phase> {
 	public Phase read(JsonReader in) throws IOException {
 		JsonObject object = (JsonObject) gson.fromJson(in, JsonElement.class);
 		if (!object.has("name") || !object.get("name").isJsonPrimitive()) {
-			throw new ConfigurationException("A phase does not have a name or is not a primitive type");
+			throw new ConfigurationException("A phase does not have a name or name is not a primitive type");
 		}
 		String phaseName = object.get("name").getAsString();
 

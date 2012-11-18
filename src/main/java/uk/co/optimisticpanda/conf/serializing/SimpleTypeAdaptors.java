@@ -1,16 +1,14 @@
-package uk.co.optimisticpanda.config.serializing.typeadaptors;
+package uk.co.optimisticpanda.conf.serializing;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 
 import com.google.common.base.Optional;
-import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -36,9 +34,7 @@ public class SimpleTypeAdaptors {
 
 		@Override
 		public <T> boolean supplies(TypeToken<T> type) {
-			TypeToken<Optional<String>> optionalStringToken = new TypeToken<Optional<String>>() {
-			};
-			return type.equals(optionalStringToken);
+			return type.equals(new TypeToken<Optional<String>>() {});
 		}
 	}
 
@@ -61,8 +57,7 @@ public class SimpleTypeAdaptors {
 
 		@Override
 		public <T> boolean supplies(TypeToken<T> type) {
-			TypeToken<Optional<File>> optionalFileToken = new TypeToken<Optional<File>>() {};
-			return type.equals(optionalFileToken);
+			return type.equals(new TypeToken<Optional<File>>() {});
 		}
 	}
 
@@ -89,11 +84,43 @@ public class SimpleTypeAdaptors {
 		}
 	}
 
-	public static class ResourceTypeAdaptor extends TypeAdapter<Optional<Resource>> {
+	public static class ResourceTypeAdaptor extends TypeAdaptorRegistration<Resource> {
 
-		@Autowired
-		ResourceLoader loader;
+		private ResourceLoader loader;
 		
+		public ResourceTypeAdaptor(ResourceLoader resourceLoader) {
+			loader = resourceLoader;
+		}
+
+		@Override
+		public void write(JsonWriter out, Resource value) throws IOException {
+			if (value != null) {
+				out.value(value.getDescription());
+			} else {
+				out.nullValue();
+			}
+		}
+
+		@Override
+		public Resource read(JsonReader in) throws IOException {
+			String nextString = in.nextString();
+			return loader.getResource(nextString);
+		}
+
+		@Override
+		public <T> boolean supplies(TypeToken<T> type) {
+			return Resource.class.isAssignableFrom(type.getRawType());
+		}
+	}
+	
+	public static class OptionalResourceTypeAdaptor extends TypeAdaptorRegistration<Optional<Resource>> {
+		
+		private ResourceLoader loader;
+		
+		public OptionalResourceTypeAdaptor(ResourceLoader resourceLoader) {
+			loader = resourceLoader;
+		}
+
 		@Override
 		public void write(JsonWriter out, Optional<Resource> value) throws IOException {
 			if (value != null && value.isPresent()) {
@@ -102,11 +129,16 @@ public class SimpleTypeAdaptors {
 				out.nullValue();
 			}
 		}
-
+		
 		@Override
 		public Optional<Resource> read(JsonReader in) throws IOException {
 			String nextString = in.nextString();
 			return Optional.fromNullable(loader.getResource(nextString));
+		}
+		
+		@Override
+		public <T> boolean supplies(TypeToken<T> type) {
+			return type.equals(new TypeToken<Optional<Resource>>() {});
 		}
 	}
 

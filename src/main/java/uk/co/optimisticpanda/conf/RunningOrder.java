@@ -1,6 +1,7 @@
 package uk.co.optimisticpanda.conf;
 
-import uk.co.optimisticpanda.runner.PhaseExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import com.google.common.base.Objects;
 
@@ -10,13 +11,11 @@ import com.google.common.base.Objects;
  */
 public class RunningOrder {
 
+	@Autowired
+	private transient AutowireCapableBeanFactory factory;
+	
 	private ConnectionCollection connections = new ConnectionCollection();
 	private PhaseCollection phases = new PhaseCollection();
-	private transient PhaseExecutor phaseExecutor;
-
-	public void setPhaseExecutor(PhaseExecutor phaseExecutor) {
-		this.phaseExecutor = phaseExecutor;
-	}
 
 	public PhaseCollection getPhases(String... phasesToRun) {
 		return phases.getMatchingPhases(phasesToRun);
@@ -60,7 +59,8 @@ public class RunningOrder {
 
 	public void execute(String... phasesToRun) {
 		for (Phase phase : getPhases(phasesToRun)) {
-			phaseExecutor.execute(phase);
+			factory.autowireBean(phase);
+			phase.execute();
 		}
 	}
 

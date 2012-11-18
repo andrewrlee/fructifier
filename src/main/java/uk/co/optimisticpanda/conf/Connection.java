@@ -2,6 +2,8 @@ package uk.co.optimisticpanda.conf;
 
 import java.util.Set;
 
+import uk.co.optimisticpanda.util.ConfigurationException;
+
 import com.google.common.base.Objects;
 
 /**

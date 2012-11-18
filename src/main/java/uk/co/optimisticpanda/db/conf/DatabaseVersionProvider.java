@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,12 +11,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import uk.co.optimisticpanda.conf.Connection;
+import uk.co.optimisticpanda.db.versioning.ChangeSetAndDeltaVersion;
+import uk.co.optimisticpanda.db.versioning.JdbcProvider;
 import uk.co.optimisticpanda.versioning.Difference;
 import uk.co.optimisticpanda.versioning.Difference.Type;
 import uk.co.optimisticpanda.versioning.Version;
 import uk.co.optimisticpanda.versioning.VersionProvider;
-import uk.co.optimisticpanda.versioning.db.ChangeSetAndDeltaVersion;
-import uk.co.optimisticpanda.versioning.db.JdbcProvider;
 
 /**
  * A {@link VersionProvider} for databases. This is strongly tied to the
@@ -44,8 +44,8 @@ public class DatabaseVersionProvider implements VersionProvider {
 
 	public List<Difference<Version>> getDifference(VersionProvider other) {
 		List<Difference<Version>> result = new ArrayList<Difference<Version>>();
-
-		List<Version> otherVersions = other.getVersions();
+		List<Version> otherVersions = new ArrayList<Version>(other.getVersions());
+		
 		for (Version version : getVersions()) {
 			if (!otherVersions.remove(version)) {
 				result.add(new Difference<Version>(version, Type.EXTRA));

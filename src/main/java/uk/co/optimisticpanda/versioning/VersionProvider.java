@@ -47,14 +47,12 @@ public interface VersionProvider {
 	public static class VersionProviders implements InitializingBean {
 		@Autowired
 		private RunningOrder configuration;
+		
+		@Autowired
+		private VersionProviderFactory factory;
 
 		private Map<String, VersionProvider> map;
-		private final VersionProviderFactory factory;
-
-		public VersionProviders(VersionProviderFactory versionProviderFactory) {
-			this.factory = versionProviderFactory;
-		}
-
+		
 		public VersionProvider getProvider(String connectionName) {
 			return map.get(connectionName);
 		}

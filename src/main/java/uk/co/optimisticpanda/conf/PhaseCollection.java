@@ -5,13 +5,11 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
-import uk.co.optimisticpanda.runner.PhaseExecutor;
-
 import com.google.common.base.Objects;
 
 
 public class PhaseCollection implements Iterator<Phase>, Iterable<Phase> {
-	private transient static Logger log = Logger.getLogger(PhaseExecutor.class);
+	private transient static Logger log = Logger.getLogger(PhaseCollection.class);
 	private LinkedHashMap<String, Phase> phases = new LinkedHashMap<String, Phase>();
 	private transient Iterator<Phase> iterator;
 	

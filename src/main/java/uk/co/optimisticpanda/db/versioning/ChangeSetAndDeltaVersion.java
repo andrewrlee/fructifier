@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.versioning.db;
+package uk.co.optimisticpanda.db.versioning;
 
 import uk.co.optimisticpanda.versioning.Version;
 

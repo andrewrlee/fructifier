@@ -1,19 +1,17 @@
-package uk.co.optimisticpanda.config.serializing.typeadaptors;
+package uk.co.optimisticpanda.conf.serializing;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import uk.co.optimisticpanda.conf.ConfigurationException;
 import uk.co.optimisticpanda.conf.Connection;
 import uk.co.optimisticpanda.conf.ConnectionCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
+import uk.co.optimisticpanda.util.ConfigurationException;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -21,13 +19,9 @@ import com.google.gson.stream.JsonWriter;
 
 public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<ConnectionCollection> {
 
-	private TypeAdapterFactory parent;
-	private final Gson gson;
 	private final RegisteredExtensions registeredExtensions;
 
-	public ConnectionCollectionTypeAdaptor(Gson gson, TypeAdapterFactory parent, RegisteredExtensions registeredExtensions) {
-		this.gson = gson;
-		this.parent = parent;
+	public ConnectionCollectionTypeAdaptor(RegisteredExtensions registeredExtensions) {
 		this.registeredExtensions = registeredExtensions;
 	}
 

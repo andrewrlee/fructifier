@@ -1,21 +1,22 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 
-import uk.co.optimisticpanda.config.db.apply.ScriptApplier;
+import uk.co.optimisticpanda.db.apply.ScriptApplier;
 
 public class SingleScriptDatabasePhase extends DatabasePhase {
 
-	private String script;
+	private Resource script;
 
 	@Autowired
 	private transient ScriptApplier applier;
 
-	public String getScript() {
+	public Resource getScript() {
 		return script;
 	}
 
-	public void setScript(String script) {
+	public void setScript(Resource script) {
 		this.script = script;
 	}
 

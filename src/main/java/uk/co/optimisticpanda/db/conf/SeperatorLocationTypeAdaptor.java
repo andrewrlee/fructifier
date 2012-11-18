@@ -1,9 +1,9 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import java.io.IOException;
 
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.config.db.apply.QueryExtractor.SeparatorLocation;
+import uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation;
 
 import com.google.common.base.Optional;
 import com.google.gson.reflect.TypeToken;

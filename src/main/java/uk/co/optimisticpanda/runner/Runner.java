@@ -8,7 +8,7 @@ import org.springframework.core.io.Resource;
 import com.google.common.base.Optional;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
-import uk.co.optimisticpanda.config.db.DatabaseConfiguration;
+import uk.co.optimisticpanda.db.conf.DatabaseConfiguration;
 import uk.co.optimisticpanda.util.ResourceUtils;
 
 public class Runner {

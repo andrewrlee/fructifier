@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import uk.co.optimisticpanda.util.ConfigurationException;
+
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 

@@ -1,8 +1,8 @@
-package uk.co.optimisticpanda.config.db.apply;
+package uk.co.optimisticpanda.db.apply;
 
 import static org.springframework.util.StringUtils.trimTrailingWhitespace;
-import static uk.co.optimisticpanda.config.db.apply.QueryExtractor.SeparatorLocation.END_OF_LINE;
-import static uk.co.optimisticpanda.config.db.apply.QueryExtractor.SeparatorLocation.ON_OWN_LINE;
+import static uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation.END_OF_LINE;
+import static uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation.ON_OWN_LINE;
 
 import java.util.ArrayList;
 import java.util.List;

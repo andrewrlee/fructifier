@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.versioning.db;
+package uk.co.optimisticpanda.db.versioning;
 
 import java.util.Map;
 
@@ -8,7 +8,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import uk.co.optimisticpanda.conf.ConnectionCollection;
-import uk.co.optimisticpanda.config.db.DatabaseConnection;
+import uk.co.optimisticpanda.db.conf.DatabaseConnection;
 
 import com.google.common.collect.Maps;
 

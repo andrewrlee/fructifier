@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.serializing;
+package uk.co.optimisticpanda.util;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import uk.co.optimisticpanda.conf.ConfigurationException;
 
 import com.google.common.base.CaseFormat;
 

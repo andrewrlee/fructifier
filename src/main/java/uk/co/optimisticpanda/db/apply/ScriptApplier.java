@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.db.apply;
+package uk.co.optimisticpanda.db.apply;
 
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -8,11 +8,10 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 
-import uk.co.optimisticpanda.config.db.DatabasePhase;
+import uk.co.optimisticpanda.db.conf.DatabasePhase;
 import uk.co.optimisticpanda.util.TemplateApplier;
 
 import com.google.common.collect.Maps;
@@ -20,24 +19,17 @@ import com.google.common.collect.Maps;
 public class ScriptApplier {
 
 	@Autowired
-	private ResourceLoader resourceLoader;
+	private TemplateApplier applier;
 
-	private final TemplateApplier applier;
+	public void applyScript(DatabasePhase phase, Resource resource) {
 
-	public ScriptApplier() {
-		this.applier = new TemplateApplier();
-	}
-
-	public void applyScript(DatabasePhase phase, String resourceName) {
-		Resource resource = resourceLoader.getResource(resourceName);
-
-		applier.addTemplate(resourceName, resource);
+		applier.addTemplate(resource.getFilename(), resource);
 
 		HashMap<String, Object> model = Maps.newHashMap();
 		model.put("phase", phase);
 
 		StringWriter writer = new StringWriter();
-		applier.apply(resourceName, writer, model);
+		applier.apply(resource.getFilename(), writer, model);
 
 		for (final String query : phase.getQueryExtractor().getQueries(writer.toString())) {
 			phase.getJdbcTemplate().execute(new ConnectionCallback<Void>() {

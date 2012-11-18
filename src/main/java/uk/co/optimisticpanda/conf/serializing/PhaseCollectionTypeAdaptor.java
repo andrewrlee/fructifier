@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.serializing.typeadaptors;
+package uk.co.optimisticpanda.conf.serializing;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -7,7 +7,6 @@ import uk.co.optimisticpanda.conf.Phase;
 import uk.co.optimisticpanda.conf.PhaseCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -16,12 +15,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 public class PhaseCollectionTypeAdaptor extends TypeAdaptorRegistration<PhaseCollection> {
-
-	private final Gson gson;
-
-	public PhaseCollectionTypeAdaptor(Gson gson) {
-		this.gson = gson;
-	}
 
 	/**
 	 * We ignore the phases wrapper class and just write the main map using this

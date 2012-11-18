@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.conf;
+package uk.co.optimisticpanda.util;
 
 
 public class ConfigurationException extends RuntimeException{

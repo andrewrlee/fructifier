@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.ResourceLoader;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
-import uk.co.optimisticpanda.conf.Phase;
-import uk.co.optimisticpanda.config.serializing.Serializer;
+import uk.co.optimisticpanda.conf.serializing.Serializer;
 
 /**
  * We wire up this and other child contexts. After properties are set we provide
@@ -22,6 +22,8 @@ public class BaseConfiguration {
 	 */
 	@Autowired
 	public JsonProvider jsonProvider;
+	@Autowired
+	public ResourceLoader resourceLoader;
 
 	/**
 	 * Deserialises the provided json into a {@link RunningOrder} based on
@@ -30,10 +32,8 @@ public class BaseConfiguration {
 	@Bean
 	@DependsOn("registeredExtensions")
 	public RunningOrder runningOrder() {
-		Serializer serializer = new Serializer(registeredExtensions());
-		RunningOrder order = serializer.parseRunningOrder(jsonProvider.get());
-		order.setPhaseExecutor(phaseExecutor());
-		return order;
+		Serializer serializer = new Serializer(resourceLoader, registeredExtensions());
+		return serializer.parseRunningOrder(jsonProvider.get());
 	}
 
 	/**
@@ -42,15 +42,6 @@ public class BaseConfiguration {
 	@Bean(name = "registeredExtensions")
 	public RegisteredExtensions registeredExtensions() {
 		return new RegisteredExtensions();
-	}
-
-	/**
-	 * A phase executor that autowires phases with their required spring beans
-	 * before executing (calling {@link Phase#execute()})
-	 */
-	@Bean
-	public PhaseExecutor phaseExecutor() {
-		return new PhaseExecutor();
 	}
 
 }

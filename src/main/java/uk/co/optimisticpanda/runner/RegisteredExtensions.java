@@ -4,10 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import uk.co.optimisticpanda.conf.Connection;
 import uk.co.optimisticpanda.conf.Phase;
@@ -18,8 +17,9 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 
 //A class that gathers all registered extensions
-public class RegisteredExtensions implements ApplicationContextAware, InitializingBean {
+public class RegisteredExtensions implements InitializingBean {
 
+	@Autowired
 	private ApplicationContext applicationContext;
 	private BiMap<String, Class<? extends Connection>> nameToConnectionType = HashBiMap.create();
 	private BiMap<String, Class<? extends Phase>> nameToPhaseType = HashBiMap.create();
@@ -64,10 +64,6 @@ public class RegisteredExtensions implements ApplicationContextAware, Initializi
 	
 	public Set<String> getConnectionNames() {
 		return nameToConnectionType.keySet();
-	}
-
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
 	}
 
 	public static class RegisterExtension {

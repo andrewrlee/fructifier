@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.db.apply;
+package uk.co.optimisticpanda.db.apply;
 public enum DelimiterType {
     /**
      * Delimiter is interpreted whenever it appears at the end of a line

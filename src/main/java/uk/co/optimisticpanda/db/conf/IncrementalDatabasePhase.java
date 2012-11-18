@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import java.io.File;
 import java.util.List;

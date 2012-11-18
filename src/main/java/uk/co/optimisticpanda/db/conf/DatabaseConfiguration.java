@@ -1,17 +1,18 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
-import uk.co.optimisticpanda.config.db.apply.ScriptApplier;
+import uk.co.optimisticpanda.db.apply.ScriptApplier;
+import uk.co.optimisticpanda.db.versioning.JdbcProvider;
 import uk.co.optimisticpanda.runner.RegisteredExtensions.ConnectionRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions.PhaseRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions.RegisterExtension;
+import uk.co.optimisticpanda.util.TemplateApplier;
 import uk.co.optimisticpanda.versioning.VersionProvider.VersionProviderFactory;
 import uk.co.optimisticpanda.versioning.VersionProvider.VersionProviders;
-import uk.co.optimisticpanda.versioning.db.JdbcProvider;
 
 /**
  * The spring configuration for database functionality
@@ -47,13 +48,14 @@ public class DatabaseConfiguration {
 	 */
 	@Bean
 	public VersionProviders databaseVersionProviders() {
-		return new VersionProviders(databaseVersionProviderFactory());
+		return new VersionProviders();
 	}
 	
 	@Bean
 	public VersionProviderFactory databaseVersionProviderFactory() {
 		return new DatabaseVersionProvider.DatabaseVersionProviderFactory();
 	}
+	
 	@Bean
 	public JdbcProvider jdbcProviders() {
 		return new JdbcProvider(runningOrder.getConnections());
@@ -64,4 +66,9 @@ public class DatabaseConfiguration {
 		return new ScriptApplier();
 	}
 
+	@Bean
+	public TemplateApplier templateApplier(){
+		return new TemplateApplier();
+	} 
+	
 }

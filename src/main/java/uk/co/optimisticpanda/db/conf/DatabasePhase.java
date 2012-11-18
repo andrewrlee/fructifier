@@ -1,14 +1,14 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import uk.co.optimisticpanda.conf.Phase;
-import uk.co.optimisticpanda.config.db.apply.QueryExtractor;
-import uk.co.optimisticpanda.config.serializing.ReflectionUtil.IgnoreForSerializing;
+import uk.co.optimisticpanda.db.apply.QueryExtractor;
+import uk.co.optimisticpanda.db.versioning.JdbcProvider;
+import uk.co.optimisticpanda.util.ReflectionUtil.IgnoreForSerializing;
 import uk.co.optimisticpanda.versioning.VersionProvider;
 import uk.co.optimisticpanda.versioning.VersionProvider.VersionProviders;
-import uk.co.optimisticpanda.versioning.db.JdbcProvider;
 
 import com.google.common.base.Objects;
 

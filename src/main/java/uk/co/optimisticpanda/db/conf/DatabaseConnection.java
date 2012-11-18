@@ -1,8 +1,8 @@
-package uk.co.optimisticpanda.config.db;
+package uk.co.optimisticpanda.db.conf;
 
 import uk.co.optimisticpanda.conf.Connection;
-import uk.co.optimisticpanda.config.db.apply.QueryExtractor;
-import uk.co.optimisticpanda.config.db.apply.QueryExtractor.SeparatorLocation;
+import uk.co.optimisticpanda.db.apply.QueryExtractor;
+import uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;

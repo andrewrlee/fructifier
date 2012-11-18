@@ -1,6 +1,5 @@
 package uk.co.optimisticpanda.config;
 
-import static junit.framework.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,18 +22,19 @@ import uk.co.optimisticpanda.conf.ConnectionCollection;
 import uk.co.optimisticpanda.conf.Phase;
 import uk.co.optimisticpanda.conf.PhaseCollection;
 import uk.co.optimisticpanda.conf.RunningOrder;
-import uk.co.optimisticpanda.config.db.DatabaseConfiguration;
-import uk.co.optimisticpanda.config.db.DatabaseConnection;
-import uk.co.optimisticpanda.config.db.DatabasePhase;
-import uk.co.optimisticpanda.config.db.IncrementalDatabasePhase;
-import uk.co.optimisticpanda.config.db.SingleScriptDatabasePhase;
-import uk.co.optimisticpanda.config.db.apply.QueryExtractor.SeparatorLocation;
-import uk.co.optimisticpanda.config.serializing.Serializer;
+import uk.co.optimisticpanda.conf.serializing.Serializer;
+import uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation;
+import uk.co.optimisticpanda.db.conf.DatabaseConfiguration;
+import uk.co.optimisticpanda.db.conf.DatabaseConnection;
+import uk.co.optimisticpanda.db.conf.DatabasePhase;
+import uk.co.optimisticpanda.db.conf.IncrementalDatabasePhase;
+import uk.co.optimisticpanda.db.conf.SingleScriptDatabasePhase;
 import uk.co.optimisticpanda.runner.BaseConfiguration;
 import uk.co.optimisticpanda.runner.JsonProvider;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
 
 import com.google.common.collect.Maps;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { BaseConfiguration.class, DatabaseConfiguration.class, TestContext.class })
@@ -43,11 +43,15 @@ public class SerializationTest {
 	@Autowired
 	private RegisteredExtensions registeredExtensions;
 
+	@Autowired
+	private ResourceLoader loader;
+	
+	
 	private Serializer serializer;
 
 	@Before
 	public void setUp() {
-		serializer = new Serializer(registeredExtensions);
+		serializer = new Serializer(loader, registeredExtensions);
 	}
 
 	@Test
@@ -56,7 +60,7 @@ public class SerializationTest {
 		try {
 			String serialized = serializer.toString(config);
 			RunningOrder readConfig = serializer.parseRunningOrder(serialized);
-			assertEquals(config, readConfig);
+			assertThat(readConfig).isEqualTo(config);
 
 		} catch (RuntimeException e) {
 			e.printStackTrace();
@@ -74,11 +78,11 @@ public class SerializationTest {
 
 		PhaseCollection readPhases = serializer.parsePhases(serialized);
 
-		assertEquals("contains one phase", phases.size(), 1);
+		assertThat(phases.getPhases()).hasSize(1);
 		Phase deserializedPhase = phases.next();
-		assertEquals("database.incremental.phase", deserializedPhase.getPhaseType());
-		assertEquals(phase.getData(), deserializedPhase.getData());
-		assertEquals(phases, readPhases);
+		assertThat(deserializedPhase.getPhaseType()).isEqualTo("database.incremental.phase");
+		assertThat(deserializedPhase.getData()).isEqualTo(phase.getData());
+		assertThat(readPhases).isEqualTo(phases);
 	}
 
 	@Test
@@ -87,7 +91,7 @@ public class SerializationTest {
 		SingleScriptDatabasePhase phase2 = new SingleScriptDatabasePhase();
 		phase2.setConnectionName("db1");
 		phase2.setName("02");
-		phase2.setScript("classpath:/pla");
+		phase2.setScript(loader.getResource("file:src/test/resources/test1/scripts/single/create_db.sql"));
 		PhaseCollection phases = new PhaseCollection().put("01", phase).put("02", phase2);
 		RunningOrder config = createConfig();
 		config.setPhases(phases);
@@ -96,14 +100,14 @@ public class SerializationTest {
 		config = serializer.parseRunningOrder(serialized);
 		phases = config.getPhases("01", "02");
 
-		assertEquals("contains two phase", phases.size(), 2);
+		assertThat(phases.getPhases()).hasSize(2);
 		Phase deserializedPhase = phases.next();
-		assertEquals("database.incremental.phase", deserializedPhase.getPhaseType());
-		assertEquals(phase.getData(), deserializedPhase.getData());
+		assertThat(deserializedPhase.getPhaseType()).isEqualTo("database.incremental.phase");
+		assertThat(deserializedPhase.getData()).isEqualTo(phase.getData());
 
 		deserializedPhase = phases.next();
-		assertEquals("database.single.script.phase", deserializedPhase.getPhaseType());
-		assertEquals(Maps.newHashMap(), deserializedPhase.getData());
+		assertThat(deserializedPhase.getPhaseType()).isEqualTo("database.single.script.phase");
+		assertThat(deserializedPhase.getData()).isEqualTo(Maps.<String,Object>newHashMap());
 	}
 
 	private RunningOrder createConfig(Phase... phases) {
