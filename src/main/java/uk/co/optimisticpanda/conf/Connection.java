@@ -3,13 +3,14 @@ package uk.co.optimisticpanda.conf;
 import java.util.Set;
 
 import uk.co.optimisticpanda.util.ConfigurationException;
+import uk.co.optimisticpanda.util.Named;
 
 import com.google.common.base.Objects;
 
 /**
- * Base class that represents a connection to an external datasource. 
+ * Base class that represents a connection to an external datasource.
  */
-public abstract class Connection {
+public abstract class Connection implements Named {
 
 	private String name;
 	private String connectionType;
@@ -30,20 +31,19 @@ public abstract class Connection {
 		this.connectionType = connectionType;
 	}
 
-	public static Connection create(Set<String> availableConnectionTypes,
-			String detailsName, String type,
-			Class<? extends Connection> clazz) {
+	public static Connection create(Set<String> availableConnectionTypes, String detailsName, String type, Class<? extends Connection> clazz) {
 		try {
-			if(clazz == null) {
-				throw new ConfigurationException("Do not know what type of connection: "  + type +" is, for connection:" + detailsName + ". Possible connection types are: " + availableConnectionTypes);
+			if (clazz == null) {
+				throw new ConfigurationException("Do not know what type of connection: " + type + " is, for connection:" + detailsName + ". Possible connection types are: "
+						+ availableConnectionTypes);
 			}
 			return clazz.newInstance();
 		} catch (InstantiationException e) {
-			throw new ConfigurationException("Could not instantiate connection:" + detailsName+ ", type:" + type +", class:"  + clazz, e);
+			throw new ConfigurationException("Could not instantiate connection:" + detailsName + ", type:" + type + ", class:" + clazz, e);
 		} catch (IllegalAccessException e) {
-			throw new ConfigurationException("Could not instantiate connection:" + detailsName+ ", type:" + type +", class:"  + clazz, e);
+			throw new ConfigurationException("Could not instantiate connection:" + detailsName + ", type:" + type + ", class:" + clazz, e);
 		}
-		
+
 	}
 
 	@Override

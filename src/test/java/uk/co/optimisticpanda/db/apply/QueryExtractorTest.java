@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.config.db.apply;
+package uk.co.optimisticpanda.db.apply;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

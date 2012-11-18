@@ -13,26 +13,28 @@ import com.google.common.io.Resources;
 
 public class RunnerTest {
 
-
 	@Test
 	public void testRunner() throws IOException {
-		Runner runner = new Runner("classpath:runner-test1.json", Optional.of("classpath:runner-test1.properties"));
 		try {
-			runner.run("createDatabase");
-		}catch(RuntimeException e) {
+
+			new Runner( //
+					"classpath:runner-test1.json", //
+					Optional.of("classpath:runner-test1.properties")//
+			).run("createDatabase");
+
+		} catch (RuntimeException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testRunner2() throws IOException {
 		URL resource = Resources.getResource("runner-test2.json");
 		String json = Resources.toString(resource, Charsets.UTF_8);
 		Runner runner = new Runner(json);
-		
+
 		runner.run("update", "update2");
 	}
 
 }
-

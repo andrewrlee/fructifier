@@ -1,5 +1,7 @@
-package uk.co.optimisticpanda.config;
+package uk.co.optimisticpanda.conf.serializing;
 
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.Arrays;
@@ -18,10 +20,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import uk.co.optimisticpanda.conf.ConnectionCollection;
 import uk.co.optimisticpanda.conf.Phase;
-import uk.co.optimisticpanda.conf.PhaseCollection;
 import uk.co.optimisticpanda.conf.RunningOrder;
+import uk.co.optimisticpanda.conf.RunningOrder.ConnectionCollection;
+import uk.co.optimisticpanda.conf.RunningOrder.PhaseCollection;
 import uk.co.optimisticpanda.conf.serializing.Serializer;
 import uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation;
 import uk.co.optimisticpanda.db.conf.DatabaseConfiguration;
@@ -34,7 +36,6 @@ import uk.co.optimisticpanda.runner.JsonProvider;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
 
 import com.google.common.collect.Maps;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { BaseConfiguration.class, DatabaseConfiguration.class, TestContext.class })
@@ -78,7 +79,7 @@ public class SerializationTest {
 
 		PhaseCollection readPhases = serializer.parsePhases(serialized);
 
-		assertThat(phases.getPhases()).hasSize(1);
+		assertThat(phases.getElements()).hasSize(1);
 		Phase deserializedPhase = phases.next();
 		assertThat(deserializedPhase.getPhaseType()).isEqualTo("database.incremental.phase");
 		assertThat(deserializedPhase.getData()).isEqualTo(phase.getData());
@@ -100,7 +101,7 @@ public class SerializationTest {
 		config = serializer.parseRunningOrder(serialized);
 		phases = config.getPhases("01", "02");
 
-		assertThat(phases.getPhases()).hasSize(2);
+		assertThat(phases.getElements()).hasSize(2);
 		Phase deserializedPhase = phases.next();
 		assertThat(deserializedPhase.getPhaseType()).isEqualTo("database.incremental.phase");
 		assertThat(deserializedPhase.getData()).isEqualTo(phase.getData());

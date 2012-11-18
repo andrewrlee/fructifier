@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import uk.co.optimisticpanda.conf.Connection;
-import uk.co.optimisticpanda.conf.ConnectionCollection;
+import uk.co.optimisticpanda.conf.RunningOrder.ConnectionCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
 import uk.co.optimisticpanda.util.ConfigurationException;
@@ -32,7 +32,7 @@ public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<Con
 	public void write(JsonWriter out, ConnectionCollection details) throws IOException {
 		TypeToken<LinkedHashMap<String, Connection>> typeToken = new TypeToken<LinkedHashMap<String, Connection>>() {
 		};
-		gson.getDelegateAdapter(parent, typeToken).write(out, details.getConnectionDetails());
+		gson.getDelegateAdapter(parent, typeToken).write(out, details.getElements());
 	}
 
 	@Override
@@ -56,19 +56,16 @@ public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<Con
 			object.addProperty(name, in.nextString());
 		}
 		String connectionType = object.get("connectionType").getAsString();
-		Connection details = create(registeredExtensions.getConnectionNames(), detailsName, connectionType,
-				registeredExtensions.getConnectionTypeForName(connectionType), object);
+		Connection details = create(registeredExtensions.getConnectionNames(), detailsName, connectionType, registeredExtensions.getConnectionTypeForName(connectionType), object);
 		details.setConnectionType(connectionType);
 		details.setName(detailsName);
 		in.endObject();
 		collection.put(detailsName, details);
 	}
-	
-	private Connection create(Set<String> availableDetails, String connectionName,
-			String connectionType, Class<? extends Connection> clazz, JsonElement element) {
+
+	private Connection create(Set<String> availableDetails, String connectionName, String connectionType, Class<? extends Connection> clazz, JsonElement element) {
 		if (clazz == null) {
-			throw new ConfigurationException("Do not know what type of connection: "
-					+ connectionType + " is, for connection:" + connectionName
+			throw new ConfigurationException("Do not know what type of connection: " + connectionType + " is, for connection:" + connectionName
 					+ ". Possible connection types are: " + availableDetails);
 		}
 		return gson.fromJson(element, clazz);
@@ -79,5 +76,4 @@ public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<Con
 		return ConnectionCollection.class.isAssignableFrom(type.getRawType());
 	}
 
-	
 }

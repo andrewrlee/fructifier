@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.core.io.ResourceLoader;
 
-import uk.co.optimisticpanda.conf.PhaseCollection;
 import uk.co.optimisticpanda.conf.RunningOrder;
+import uk.co.optimisticpanda.conf.RunningOrder.PhaseCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 import uk.co.optimisticpanda.db.conf.DatabasePhase;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;

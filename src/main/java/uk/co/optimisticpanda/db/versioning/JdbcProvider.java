@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import uk.co.optimisticpanda.conf.ConnectionCollection;
+import uk.co.optimisticpanda.conf.RunningOrder.ConnectionCollection;
 import uk.co.optimisticpanda.db.conf.DatabaseConnection;
 
 import com.google.common.collect.Maps;

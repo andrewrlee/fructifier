@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import uk.co.optimisticpanda.conf.Phase;
-import uk.co.optimisticpanda.conf.PhaseCollection;
+import uk.co.optimisticpanda.conf.RunningOrder.PhaseCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 
 import com.google.gson.JsonElement;
@@ -24,7 +24,7 @@ public class PhaseCollectionTypeAdaptor extends TypeAdaptorRegistration<PhaseCol
 	public void write(JsonWriter out, PhaseCollection value) throws IOException {
 		TypeToken<LinkedHashMap<String, Phase>> typeToken = new TypeToken<LinkedHashMap<String, Phase>>() {
 		};
-		gson.getAdapter(typeToken).write(out, value.getPhases());
+		gson.getAdapter(typeToken).write(out, value.getElements());
 	}
 
 	@Override

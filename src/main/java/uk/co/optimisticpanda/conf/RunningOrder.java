@@ -1,19 +1,19 @@
 package uk.co.optimisticpanda.conf;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import com.google.common.base.Objects;
 
 /**
- * This is parsed directly from a json configuration file. After instantiation
- * the {@link PhaseExecutor} gets injected into it by the spring configuration. 
+ * This is parsed directly from a json configuration file.
  */
 public class RunningOrder {
 
 	@Autowired
 	private transient AutowireCapableBeanFactory factory;
-	
+
 	private ConnectionCollection connections = new ConnectionCollection();
 	private PhaseCollection phases = new PhaseCollection();
 
@@ -62,6 +62,27 @@ public class RunningOrder {
 			factory.autowireBean(phase);
 			phase.execute();
 		}
+	}
+
+	public static class ConnectionCollection extends AbstractCollection<Connection, ConnectionCollection> {
+	}
+
+	public static class PhaseCollection extends AbstractCollection<Phase, PhaseCollection> {
+		private transient static Logger log = Logger.getLogger(PhaseCollection.class);
+
+		public PhaseCollection getMatchingPhases(String[] phasesToRun) {
+			PhaseCollection result = new PhaseCollection();
+			for (String phase : phasesToRun) {
+				if (!getElements().containsKey(phase)) {
+					log.debug("Ignoring phase: " + phase + " as not specified in json file.");
+				} else {
+					result.put(phase, getElements().get(phase));
+				}
+			}
+			log.debug("Found the following matching phases: " + result.getElements().keySet());
+			return result;
+		}
+
 	}
 
 }

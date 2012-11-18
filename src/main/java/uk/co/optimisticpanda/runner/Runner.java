@@ -13,10 +13,10 @@ import uk.co.optimisticpanda.util.ResourceUtils;
 
 public class Runner {
 
-	private RunningOrder runningOrder;
+	private AnnotationConfigApplicationContext context;
 
 	public Runner(String jsonResourceLocation, Optional<String> propertyResourceLocation) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context = new AnnotationConfigApplicationContext();
 		
 		Resource json = context.getResource(jsonResourceLocation);
 		Properties properties = ResourceUtils.getProperties(context, propertyResourceLocation);
@@ -25,15 +25,14 @@ public class Runner {
 		context.register(BaseConfiguration.class);
 		context.register(DatabaseConfiguration.class);
 		context.refresh();
-		runningOrder = context.getBean(RunningOrder.class);
-	}
+	} 
 	
 	public Runner(String jsonResourceLocation) {
 		this(jsonResourceLocation, Optional.<String>absent());
 	}
 	
 	public void run(String... phasesToRun) {
-		runningOrder.execute(phasesToRun);
+		context.getBean(RunningOrder.class).execute(phasesToRun);
 	}
 
 }

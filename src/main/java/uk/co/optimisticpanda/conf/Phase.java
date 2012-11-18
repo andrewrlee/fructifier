@@ -2,6 +2,8 @@ package uk.co.optimisticpanda.conf;
 
 import java.util.Map;
 
+import uk.co.optimisticpanda.util.Named;
+
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
@@ -11,7 +13,7 @@ import com.google.common.collect.Maps;
  * It consists of a name and connection details. It also contains a map of
  * arbitrary data that contains context information for this phase.
  */
-public abstract class Phase {
+public abstract class Phase implements Named {
 
 	private Map<String, Object> data = Maps.newHashMap();
 	private String phaseType;
