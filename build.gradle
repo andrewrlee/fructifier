@@ -1,0 +1,36 @@
+
+apply plugin: 'java'
+repositories { mavenCentral() }
+
+dependencies {
+	compile (
+			'com.google.code.gson:gson:2.2.1',
+			'com.google.guava:guava:12.0',
+			'commons-dbcp:commons-dbcp:1.4',
+			'org.freemarker:freemarker:2.3.15',
+			'org.springframework:spring-context:3.1.1.RELEASE',
+			'org.springframework:spring-jdbc:3.1.1.RELEASE',
+			'cglib:cglib:2.2.2',
+			'mysql:mysql-connector-java:5.1.21',
+			)
+
+	compile(group: 'log4j', name: 'log4j', version: '1.2.15'){
+		exclude group: 'javax.jms'
+		exclude group: 'com.sun.jdmk'
+		exclude group: 'com.sun.jmx'
+		exclude group: 'javax.activation'
+		exclude group: 'javax.mail'
+	}
+
+	testCompile(
+			'org.springframework:spring-test:3.1.1.RELEASE',
+			'junit:junit:4.9',
+			'org.hamcrest:hamcrest-all:1.1'
+			)
+}
+
+jar {
+	configurations.testCompile.each{println ">>" + it}
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it)
+		} }
+}
