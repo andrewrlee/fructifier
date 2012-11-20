@@ -1,12 +1,13 @@
 package uk.co.optimisticpanda.conf.serializing;
 
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.*;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -35,6 +36,7 @@ import uk.co.optimisticpanda.runner.BaseConfiguration;
 import uk.co.optimisticpanda.runner.JsonProvider;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -99,7 +101,7 @@ public class SerializationTest {
 
 		String serialized = serializer.toString(config);
 		config = serializer.parseRunningOrder(serialized);
-		phases = config.getPhases("01", "02");
+		phases = config.getMatchingPhases("01", "02");
 
 		assertThat(phases.getElements()).hasSize(2);
 		Phase deserializedPhase = phases.next();
@@ -111,6 +113,32 @@ public class SerializationTest {
 		assertThat(deserializedPhase.getData()).isEqualTo(Maps.<String,Object>newHashMap());
 	}
 
+	@Test
+	public void testProfiles() {
+		DatabasePhase phase = createPhase();
+		SingleScriptDatabasePhase phase2 = new SingleScriptDatabasePhase();
+		phase2.setConnectionName("db1");
+		phase2.setName("02");
+		phase2.setScript(loader.getResource("file:src/test/resources/test1/scripts/single/create_db.sql"));
+		PhaseCollection phases = new PhaseCollection().put("01", phase).put("02", phase2);
+		RunningOrder config = createConfig();
+		config.setPhases(phases);
+
+		Map<String,List<String>> profiles = Maps.newLinkedHashMap();
+		profiles.put("dev", Lists.newArrayList("teardown","createChangeLog","apply", "testData"));
+		profiles.put("prodSetUp", Lists.newArrayList("teardown","createChangeLog","apply"));
+		profiles.put("prodUpgrade", Lists.newArrayList("apply"));
+		config.setProfiles(profiles);
+		
+		String serialized = serializer.toString(config);
+		
+		config = serializer.parseRunningOrder(serialized);
+		assertThat(config.getProfiles()) //
+				.contains(entry("dev",Lists.newArrayList("teardown","createChangeLog","apply", "testData")))
+				.contains(entry("prodSetUp",Lists.newArrayList("teardown","createChangeLog","apply")))
+				.contains(entry("prodUpgrade",Lists.newArrayList("apply")));
+	}
+	
 	private RunningOrder createConfig(Phase... phases) {
 		RunningOrder config = new RunningOrder();
 

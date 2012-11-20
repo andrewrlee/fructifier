@@ -1,0 +1,25 @@
+{
+    "connections": {
+        "root": {
+            "connectionType": "database",
+            "driver": "com.mysql.jdbc.Driver",
+            "connectionUrl" : "jdbc:mysql://localhost:3306/",
+            "dbms": "mysql",
+            "user": "root",
+            "password": ""
+        }
+    },
+    "phases": {
+        "createDatabase": {
+            "phaseType": "database.single.script.phase",
+            "connectionName" : "root", 
+            "script" : "classpath:/test1/scripts/single/create_db.sql",
+            "data": {
+                "app_user": "foo",
+                "app_password": "foo",
+                "database" : "bar",
+                "host" : "localhost"
+            }
+        }
+    }
+}

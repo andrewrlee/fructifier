@@ -12,7 +12,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 //A collection of named elements.
-public class AbstractCollection<D extends Named, THIS extends AbstractCollection<D, THIS>> implements Iterator<D>, Iterable<D> {
+public class AbstractNamedCollection<D extends Named, THIS extends AbstractNamedCollection<D, THIS>> implements Iterator<D>, Iterable<D> {
 
 	private LinkedHashMap<String, D> namedElements = new LinkedHashMap<String, D>();
 	private transient Iterator<D> iterator;
@@ -82,7 +82,7 @@ public class AbstractCollection<D extends Named, THIS extends AbstractCollection
 		if (getClass() != obj.getClass())
 			return false;
 		@SuppressWarnings("unchecked")
-		final AbstractCollection<D, THIS> other = (AbstractCollection<D, THIS>) obj;
+		final AbstractNamedCollection<D, THIS> other = (AbstractNamedCollection<D, THIS>) obj;
 		return Objects.equal(this.namedElements, other.namedElements); //
 	}
 

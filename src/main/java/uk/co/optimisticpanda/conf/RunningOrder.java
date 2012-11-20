@@ -1,10 +1,14 @@
 package uk.co.optimisticpanda.conf;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 
 /**
  * This is parsed directly from a json configuration file.
@@ -16,13 +20,14 @@ public class RunningOrder {
 
 	private ConnectionCollection connections = new ConnectionCollection();
 	private PhaseCollection phases = new PhaseCollection();
-
-	public PhaseCollection getPhases(String... phasesToRun) {
-		return phases.getMatchingPhases(phasesToRun);
-	}
-
+	private Map<String,List<String>> profiles = Maps.newHashMap();
+	
 	public void setPhases(PhaseCollection phases) {
 		this.phases = phases;
+	}
+	
+	public PhaseCollection getMatchingPhases(String... phaseNames) {
+		return phases.getMatchingPhases(phaseNames);
 	}
 
 	public ConnectionCollection getConnections() {
@@ -33,6 +38,14 @@ public class RunningOrder {
 		this.connections = connections;
 	}
 
+	public Map<String, List<String>> getProfiles() {
+		return profiles;
+	}
+
+	public void setProfiles(Map<String, List<String>> profiles) {
+		this.profiles = profiles;
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(connections, phases, super.hashCode());
@@ -57,22 +70,26 @@ public class RunningOrder {
 				.toString();
 	}
 
-	public void execute(String... phasesToRun) {
-		for (Phase phase : getPhases(phasesToRun)) {
+	public void executeProfile(String profileName) {
+		execute(profiles.get(profileName).toArray(new String[0]));
+	}
+	
+	public void execute(String... phaseNames) {
+		for (Phase phase : getMatchingPhases(phaseNames)) {
 			factory.autowireBean(phase);
 			phase.execute();
 		}
 	}
 
-	public static class ConnectionCollection extends AbstractCollection<Connection, ConnectionCollection> {
+	public static class ConnectionCollection extends AbstractNamedCollection<Connection, ConnectionCollection> {
 	}
 
-	public static class PhaseCollection extends AbstractCollection<Phase, PhaseCollection> {
+	public static class PhaseCollection extends AbstractNamedCollection<Phase, PhaseCollection> {
 		private transient static Logger log = Logger.getLogger(PhaseCollection.class);
 
-		public PhaseCollection getMatchingPhases(String[] phasesToRun) {
+		public PhaseCollection getMatchingPhases(String... phaseNames) {
 			PhaseCollection result = new PhaseCollection();
-			for (String phase : phasesToRun) {
+			for (String phase : phaseNames) {
 				if (!getElements().containsKey(phase)) {
 					log.debug("Ignoring phase: " + phase + " as not specified in json file.");
 				} else {

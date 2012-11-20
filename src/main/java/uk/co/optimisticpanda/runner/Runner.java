@@ -31,8 +31,12 @@ public class Runner {
 		this(jsonResourceLocation, Optional.<String>absent());
 	}
 	
-	public void run(String... phasesToRun) {
-		context.getBean(RunningOrder.class).execute(phasesToRun);
+	public void runProfile(String profileName) {
+		context.getBean(RunningOrder.class).executeProfile(profileName);
+	}
+	
+	public void run(String... phases) {
+		context.getBean(RunningOrder.class).execute(phases);
 	}
 
 }
