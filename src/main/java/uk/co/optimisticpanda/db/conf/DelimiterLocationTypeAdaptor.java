@@ -3,24 +3,24 @@ package uk.co.optimisticpanda.db.conf;
 import java.io.IOException;
 
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation;
+import uk.co.optimisticpanda.db.apply.QueryExtractor.DelimiterLocation;
 
 import com.google.common.base.Optional;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-public class SeperatorLocationTypeAdaptor extends TypeAdaptorRegistration<Optional<SeparatorLocation>> {
+public class DelimiterLocationTypeAdaptor extends TypeAdaptorRegistration<Optional<DelimiterLocation>> {
 
 		@Override
 		public <T> boolean supplies(TypeToken<T> type) {
-			TypeToken<Optional<SeparatorLocation>> typeToken = new TypeToken<Optional<SeparatorLocation>>() {
+			TypeToken<Optional<DelimiterLocation>> typeToken = new TypeToken<Optional<DelimiterLocation>>() {
 			};
 			return type.equals(typeToken);
 		}
 
 		@Override
-		public void write(JsonWriter out, Optional<SeparatorLocation> value) throws IOException {
+		public void write(JsonWriter out, Optional<DelimiterLocation> value) throws IOException {
 			if (value != null && value.isPresent()) {
 				out.value(value.get().name());
 			} else {
@@ -29,9 +29,9 @@ public class SeperatorLocationTypeAdaptor extends TypeAdaptorRegistration<Option
 		}
 
 		@Override
-		public Optional<SeparatorLocation> read(JsonReader in) throws IOException {
+		public Optional<DelimiterLocation> read(JsonReader in) throws IOException {
 			String nextString = in.nextString();
-			return Optional.fromNullable(SeparatorLocation.valueOf(nextString));
+			return Optional.fromNullable(DelimiterLocation.valueOf(nextString));
 		}
 
 	}

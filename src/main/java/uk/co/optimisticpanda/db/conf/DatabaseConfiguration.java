@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
 import uk.co.optimisticpanda.db.apply.ScriptApplier;
-import uk.co.optimisticpanda.db.versioning.JdbcProvider;
+import uk.co.optimisticpanda.db.apply.DatabaseApplier;
+import uk.co.optimisticpanda.db.phase.IncrementalDatabasePhase;
+import uk.co.optimisticpanda.db.phase.SingleScriptDatabasePhase;
 import uk.co.optimisticpanda.runner.RegisteredExtensions.ConnectionRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions.PhaseRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions.RegisterExtension;
 import uk.co.optimisticpanda.util.TemplateApplier;
-import uk.co.optimisticpanda.versioning.VersionProvider.VersionProviderFactory;
-import uk.co.optimisticpanda.versioning.VersionProvider.VersionProviders;
 
 /**
  * The spring configuration for database functionality
@@ -31,10 +31,10 @@ public class DatabaseConfiguration {
 	public RegisterExtension registerDatabaseExtension() {
 		return new RegisterExtension()
 				.connectionTypes(
-						new ConnectionRegistration("database", DatabaseConnection.class)
+						new ConnectionRegistration("database", DatabaseConnectionDefinition.class)
 						)
 				.typeAdaptors(
-						new SeperatorLocationTypeAdaptor()
+						new DelimiterLocationTypeAdaptor()
 						)
 				.phaseTypes(
 						new PhaseRegistration("database.incremental.phase", IncrementalDatabasePhase.class),
@@ -43,27 +43,19 @@ public class DatabaseConfiguration {
 	}
 	/* @formatter:off*/
 
-	/**
-	 * A bean that gets autowired into the {@link DatabasePhase}
-	 */
 	@Bean
-	public VersionProviders databaseVersionProviders() {
-		return new VersionProviders();
-	}
-	
-	@Bean
-	public VersionProviderFactory databaseVersionProviderFactory() {
-		return new DatabaseVersionProvider.DatabaseVersionProviderFactory();
-	}
-	
-	@Bean
-	public JdbcProvider jdbcProviders() {
-		return new JdbcProvider(runningOrder.getConnections());
+	public JdbcConnectionProvider jdbcProviders() {
+		return new JdbcConnectionProvider(runningOrder.getConnections());
 	}
 
 	@Bean
 	public ScriptApplier scriptApplier() {
 		return new ScriptApplier();
+	}
+	
+	@Bean
+	public DatabaseApplier upgradeApplier() {
+		return new DatabaseApplier();
 	}
 
 	@Bean

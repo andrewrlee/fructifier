@@ -1,16 +1,16 @@
 package uk.co.optimisticpanda.db.conf;
 
-import uk.co.optimisticpanda.conf.Connection;
-import uk.co.optimisticpanda.db.apply.QueryExtractor;
-import uk.co.optimisticpanda.db.apply.QueryExtractor.SeparatorLocation;
+import static com.google.common.base.Objects.equal;
+import static com.google.common.base.Objects.toStringHelper;
+import uk.co.optimisticpanda.conf.ConnectionDefinition;
+import uk.co.optimisticpanda.db.apply.QueryExtractor.DelimiterLocation;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-
 /**
- * A {@link Connection} to a database resource
+ * A {@link ConnectionDefinition} to a database resource
  */
-public class DatabaseConnection extends Connection {
+public class DatabaseConnectionDefinition extends ConnectionDefinition {
 
 	private String connectionUrl;
 	private String user;
@@ -20,8 +20,8 @@ public class DatabaseConnection extends Connection {
 	private Optional<String> encoding = Optional.absent();
 	private Optional<String> lineEnding = Optional.absent();
 	private Optional<String> delimiter = Optional.absent();
-	private Optional<SeparatorLocation> separatorLocation = Optional.absent();
-	private Optional<String> seperator = Optional.absent();
+	private Optional<DelimiterLocation> separatorLocation = Optional.absent();
+	private Optional<String> separator = Optional.absent();
 	private Optional<String> changeLogTableName = Optional.absent();
 
 	public String getDbms() {
@@ -88,20 +88,20 @@ public class DatabaseConnection extends Connection {
 		this.delimiter = Optional.fromNullable(delimiter);
 	}
 
-	public SeparatorLocation getSeparatorLocation() {
+	public DelimiterLocation getSeparatorLocation() {
 		return separatorLocation.orNull();
 	}
 
-	public void setSeparatorLocation(SeparatorLocation separatorLocation) {
+	public void setSeparatorLocation(DelimiterLocation separatorLocation) {
 		this.separatorLocation = Optional.fromNullable(separatorLocation);
 	}
 
-	public String getSeperator() {
-		return seperator.orNull();
+	public String getSeparator() {
+		return separator.orNull();
 	}
 
-	public void setSeperator(String seperator) {
-		this.seperator = Optional.fromNullable(seperator);
+	public void setSeparator(String separator) {
+		this.separator = Optional.fromNullable(separator);
 	}
 
 	public String getChangeLogTableName() {
@@ -112,13 +112,9 @@ public class DatabaseConnection extends Connection {
 		this.changeLogTableName = Optional.fromNullable(changeLogTableName);
 	}
 
-	public QueryExtractor getQueryExtractor() {
-		return new QueryExtractor(getDelimiter(), getSeperator(), getSeparatorLocation());
-	}
-	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(password, user, connectionUrl, driver, dbms, delimiter, separatorLocation, lineEnding, encoding, changeLogTableName, seperator);
+		return Objects.hashCode(password, user, connectionUrl, driver, dbms, delimiter, separatorLocation, lineEnding, encoding, changeLogTableName, separator);
 	}
 
 	@Override
@@ -127,25 +123,25 @@ public class DatabaseConnection extends Connection {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final DatabaseConnection other = (DatabaseConnection) obj;
+		final DatabaseConnectionDefinition other = (DatabaseConnectionDefinition) obj;
 		return super.equals(obj) && //
-				Objects.equal(this.getName(), other.getName()) && //
-				Objects.equal(this.connectionUrl, other.connectionUrl) && //
-				Objects.equal(this.driver, other.driver) && //
-				Objects.equal(this.dbms, other.dbms) && //
-				Objects.equal(this.password, other.password)//
-				&& Objects.equal(this.changeLogTableName, other.changeLogTableName) //
-				&& Objects.equal(this.delimiter, other.delimiter) //
-				&& Objects.equal(this.separatorLocation, other.separatorLocation) //
-				&& Objects.equal(this.encoding, other.encoding) //
-				&& Objects.equal(this.lineEnding, other.lineEnding) //
-				&& Objects.equal(this.seperator, other.seperator); //
+				equal(this.getName(), other.getName()) && //
+				equal(this.connectionUrl, other.connectionUrl) && //
+				equal(this.driver, other.driver) && //
+				equal(this.dbms, other.dbms) && //
+				equal(this.password, other.password) &&//
+				equal(this.changeLogTableName, other.changeLogTableName) &&//
+				equal(this.delimiter, other.delimiter) &&//
+				equal(this.separatorLocation, other.separatorLocation) &&//
+				equal(this.encoding, other.encoding) &&//
+				equal(this.lineEnding, other.lineEnding) &&//
+				equal(this.separator, other.separator); //
 
 	}
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this.getClass())//
+		return toStringHelper(this.getClass())//
 				.add("name", getName()) //
 				.add("connectionUrl", connectionUrl) //
 				.add("password", password) //

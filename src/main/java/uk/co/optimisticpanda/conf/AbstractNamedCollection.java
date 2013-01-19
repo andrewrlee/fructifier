@@ -60,7 +60,7 @@ public class AbstractNamedCollection<D extends Named, THIS extends AbstractNamed
 		throw new ConfigurationException("Could not find connection details named: " + connectionName + " of type: " + clazz);
 	}
 
-	public <E extends Connection> List<E> ofType(Class<E> clazz) {
+	public <E extends ConnectionDefinition> List<E> ofType(Class<E> clazz) {
 		List<E> list = Lists.newArrayList();
 		for (Entry<String, D> element : namedElements.entrySet()) {
 			if (clazz.isInstance(element.getValue())) {
@@ -91,4 +91,8 @@ public class AbstractNamedCollection<D extends Named, THIS extends AbstractNamed
 		return Objects.toStringHelper(this.getClass()).add("elements", namedElements).toString();
 	}
 
+	
+	public static void main(String[] args) {
+		System.out.println("Fsdsinal".matches("^[\\s\\S]*Final[\\s\\S]*$"));
+	}
 }

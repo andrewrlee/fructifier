@@ -13,7 +13,7 @@ grant all on ${phase.data.database}.* TO '${phase.data.app_user}'@'${phase.data.
   
 USE ${phase.data.database};
 
-CREATE TABLE ${phase.connectionContext.connection.changeLogTableName}(
+CREATE TABLE ${connectionDefinition.changeLogTableName}(
   change_number BIGINT NOT NULL,
   change_set VARCHAR(100) NOT NULL,
   complete_dt TIMESTAMP NOT NULL,
@@ -21,5 +21,5 @@ CREATE TABLE ${phase.connectionContext.connection.changeLogTableName}(
   description VARCHAR(500) NOT NULL
 );
 
-ALTER TABLE changelog ADD CONSTRAINT Pkchangelog PRIMARY KEY (change_number);
+ALTER TABLE changelog ADD CONSTRAINT Pkchangelog PRIMARY KEY (change_number, change_set);
 

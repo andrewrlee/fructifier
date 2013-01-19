@@ -3,7 +3,6 @@ package uk.co.optimisticpanda.runner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ResourceLoader;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
@@ -30,7 +29,6 @@ public class BaseConfiguration {
 	 * registered extensions.
 	 */
 	@Bean
-	@DependsOn("registeredExtensions")
 	public RunningOrder runningOrder() {
 		Serializer serializer = new Serializer(resourceLoader, registeredExtensions());
 		return serializer.parseRunningOrder(jsonProvider.get());
@@ -39,7 +37,7 @@ public class BaseConfiguration {
 	/**
 	 * Gathers all registered extensions from child contexts.
 	 */
-	@Bean(name = "registeredExtensions")
+	@Bean
 	public RegisteredExtensions registeredExtensions() {
 		return new RegisteredExtensions();
 	}

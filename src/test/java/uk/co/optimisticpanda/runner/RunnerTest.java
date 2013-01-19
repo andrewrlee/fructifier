@@ -11,7 +11,7 @@ import com.google.common.base.Optional;
 public class RunnerTest {
 
 	@Test
-	public void runWithoutProperties() throws IOException {
+	public void runWithoutSpecifyingProperties() throws IOException {
 		try {
 			
 			new Runner( //
@@ -25,7 +25,7 @@ public class RunnerTest {
 	}
 	
 	@Test
-	public void run() throws IOException {
+	public void runSpecificPhaseWithProperties() throws IOException {
 		try {
 
 			new Runner( //
@@ -40,7 +40,7 @@ public class RunnerTest {
 	}
 
 	@Test
-	public void runProfile() throws IOException {
+	public void runSpecifyingAProfile() throws IOException {
 		Runner runner = new Runner("classpath:runner-runProfileTest.json", Optional.of("classpath:runner-runProfileTest.properties"));
 		runner.runProfile("test-profile");
 	}

@@ -10,7 +10,7 @@ import com.google.common.base.Objects;
 /**
  * Base class that represents a connection to an external datasource.
  */
-public abstract class Connection implements Named {
+public abstract class ConnectionDefinition implements Named {
 
 	private String name;
 	private String connectionType;
@@ -31,7 +31,7 @@ public abstract class Connection implements Named {
 		this.connectionType = connectionType;
 	}
 
-	public static Connection create(Set<String> availableConnectionTypes, String detailsName, String type, Class<? extends Connection> clazz) {
+	public static ConnectionDefinition create(Set<String> availableConnectionTypes, String detailsName, String type, Class<? extends ConnectionDefinition> clazz) {
 		try {
 			if (clazz == null) {
 				throw new ConfigurationException("Do not know what type of connection: " + type + " is, for connection:" + detailsName + ". Possible connection types are: "
@@ -57,7 +57,7 @@ public abstract class Connection implements Named {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final Connection other = (Connection) obj;
+		final ConnectionDefinition other = (ConnectionDefinition) obj;
 		return Objects.equal(this.name, other.name) //
 				&& Objects.equal(this.connectionType, other.connectionType);
 	}

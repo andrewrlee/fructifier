@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import uk.co.optimisticpanda.conf.Connection;
+import uk.co.optimisticpanda.conf.ConnectionDefinition;
 import uk.co.optimisticpanda.conf.RunningOrder.ConnectionCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
@@ -26,11 +26,11 @@ public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<Con
 	}
 
 	/**
-	 * We ignore the phases wrapper class and just write the main map.
+	 * We ignore the connection wrapper class and just write out the connections.
 	 */
 	@Override
 	public void write(JsonWriter out, ConnectionCollection details) throws IOException {
-		TypeToken<LinkedHashMap<String, Connection>> typeToken = new TypeToken<LinkedHashMap<String, Connection>>() {
+		TypeToken<LinkedHashMap<String, ConnectionDefinition>> typeToken = new TypeToken<LinkedHashMap<String, ConnectionDefinition>>() {
 		};
 		gson.getDelegateAdapter(parent, typeToken).write(out, details.getElements());
 	}
@@ -56,14 +56,14 @@ public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<Con
 			object.addProperty(name, in.nextString());
 		}
 		String connectionType = object.get("connectionType").getAsString();
-		Connection details = create(registeredExtensions.getConnectionNames(), detailsName, connectionType, registeredExtensions.getConnectionTypeForName(connectionType), object);
+		ConnectionDefinition details = create(registeredExtensions.getConnectionNames(), detailsName, connectionType, registeredExtensions.getConnectionTypeForName(connectionType), object);
 		details.setConnectionType(connectionType);
 		details.setName(detailsName);
 		in.endObject();
 		collection.put(detailsName, details);
 	}
 
-	private Connection create(Set<String> availableDetails, String connectionName, String connectionType, Class<? extends Connection> clazz, JsonElement element) {
+	private ConnectionDefinition create(Set<String> availableDetails, String connectionName, String connectionType, Class<? extends ConnectionDefinition> clazz, JsonElement element) {
 		if (clazz == null) {
 			throw new ConfigurationException("Do not know what type of connection: " + connectionType + " is, for connection:" + connectionName
 					+ ". Possible connection types are: " + availableDetails);

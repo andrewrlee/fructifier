@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import uk.co.optimisticpanda.conf.Connection;
+import uk.co.optimisticpanda.conf.ConnectionDefinition;
 import uk.co.optimisticpanda.conf.Phase;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 
@@ -21,7 +21,7 @@ public class RegisteredExtensions implements InitializingBean {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	private BiMap<String, Class<? extends Connection>> nameToConnectionType = HashBiMap.create();
+	private BiMap<String, Class<? extends ConnectionDefinition>> nameToConnectionType = HashBiMap.create();
 	private BiMap<String, Class<? extends Phase>> nameToPhaseType = HashBiMap.create();
 	private List<TypeAdaptorRegistration<?>> adaptorList = Lists.newArrayList();
 	
@@ -55,7 +55,7 @@ public class RegisteredExtensions implements InitializingBean {
 		return nameToPhaseType.keySet();
 	}
 
-	public Class<? extends Connection> getConnectionTypeForName(String name) {
+	public Class<? extends ConnectionDefinition> getConnectionTypeForName(String name) {
 		return nameToConnectionType.get(name);
 	}
 	public String getByConnectionType(Class<? extends Phase> type) {
@@ -109,9 +109,9 @@ public class RegisteredExtensions implements InitializingBean {
 	public static class ConnectionRegistration {
 
 		private final String connectionName;
-		private final Class<? extends Connection> connectionType;
+		private final Class<? extends ConnectionDefinition> connectionType;
 
-		public ConnectionRegistration(String connectionName, Class<? extends Connection> connectionType) {
+		public ConnectionRegistration(String connectionName, Class<? extends ConnectionDefinition> connectionType) {
 			this.connectionName = connectionName;
 			this.connectionType = connectionType;
 		}
@@ -120,7 +120,7 @@ public class RegisteredExtensions implements InitializingBean {
 			return connectionName;
 		}
 
-		public Class<? extends Connection> getConnectionType() {
+		public Class<? extends ConnectionDefinition> getConnectionType() {
 			return connectionType;
 		}
 	}

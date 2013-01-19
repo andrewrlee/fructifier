@@ -1,6 +1,5 @@
-package uk.co.optimisticpanda.db.versioning;
+package uk.co.optimisticpanda.versioning;
 
-import uk.co.optimisticpanda.versioning.Version;
 
 import com.google.common.base.Objects;
 
@@ -15,6 +14,14 @@ public class ChangeSetAndDeltaVersion implements Version {
 	public ChangeSetAndDeltaVersion(String changeSet, Long delta) {
 		this.changeSet = changeSet;
 		this.delta = delta;
+	}
+
+	public String getChangeSet() {
+		return changeSet;
+	}
+
+	public Long getDelta() {
+		return delta;
 	}
 
 	public int compareTo(Version o) {
@@ -52,12 +59,10 @@ public class ChangeSetAndDeltaVersion implements Version {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof ChangeSetAndDeltaVersion))
 			return false;
 		ChangeSetAndDeltaVersion other = (ChangeSetAndDeltaVersion) obj;
 		return Objects.equal(changeSet, other.changeSet) && Objects.equal(delta, other.delta);
 	}
-
-
 
 }

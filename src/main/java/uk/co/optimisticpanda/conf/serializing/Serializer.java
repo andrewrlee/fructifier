@@ -7,7 +7,7 @@ import org.springframework.core.io.ResourceLoader;
 import uk.co.optimisticpanda.conf.RunningOrder;
 import uk.co.optimisticpanda.conf.RunningOrder.PhaseCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.db.conf.DatabasePhase;
+import uk.co.optimisticpanda.db.phase.DatabasePhase;
 import uk.co.optimisticpanda.runner.RegisteredExtensions;
 
 import com.google.common.collect.Lists;

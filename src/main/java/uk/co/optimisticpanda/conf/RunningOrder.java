@@ -15,17 +15,19 @@ import com.google.common.collect.Maps;
  */
 public class RunningOrder {
 
+	private static final Logger logger = Logger.getLogger(RunningOrder.class);
+
 	@Autowired
 	private transient AutowireCapableBeanFactory factory;
 
 	private ConnectionCollection connections = new ConnectionCollection();
 	private PhaseCollection phases = new PhaseCollection();
-	private Map<String,List<String>> profiles = Maps.newHashMap();
-	
+	private Map<String, List<String>> profiles = Maps.newHashMap();
+
 	public void setPhases(PhaseCollection phases) {
 		this.phases = phases;
 	}
-	
+
 	public PhaseCollection getMatchingPhases(String... phaseNames) {
 		return phases.getMatchingPhases(phaseNames);
 	}
@@ -45,7 +47,43 @@ public class RunningOrder {
 	public void setProfiles(Map<String, List<String>> profiles) {
 		this.profiles = profiles;
 	}
-	
+
+	public void executeProfile(String profileName) {
+		printBanner();
+		logger.info("Executing profile: " + profileName);
+		if (!profiles.containsKey(profileName)) {
+			logger.error("No profile named: " + profileName + ", possible options: " + profiles.keySet());
+			return;
+		}
+		execute(profiles.get(profileName).toArray(new String[0]));
+	}
+
+	public void execute(String... phaseNames) {
+		for (Phase phase : getMatchingPhases(phaseNames)) {
+			factory.autowireBean(phase);
+			logger.info("Executing phase: " + phase);
+			phase.execute();
+		}
+	}
+
+	private void printBanner() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("\n\n");
+		builder.append("\t8888888888                        888    d8b  .d888 d8b\n");
+		builder.append("\t888                               888    Y8P d88P\"  Y8P                  \n");
+		builder.append("\t888                               888        888                         \n");
+		builder.append("\t8888888 888d888 888  888  .d8888b 888888 888 888888 888  .d88b.  888d888 \n");
+		builder.append("\t888     888P\"   888  888 d88P\"    888    888 888    888 d8P  Y8b 888P\"   \n");
+		builder.append("\t888     888     888  888 888      888    888 888    888 88888888 888     \n");
+		builder.append("\t888     888     Y88b 888 Y88b.    Y88b.  888 888    888 Y8b.     888     \n");
+		builder.append("\t888     888      \"Y88888  \"Y8888P  \"Y888 888 888    888  \"Y8888  888     \n\n");
+//		builder.append("\t  ____|                   |   _)   _| _)                  \n");            
+//		builder.append("\t  |     __|  |   |   __|  __|  |  |    |   _ \\   __|     \n");
+//		builder.append("\t  __|  |     |   |  (     |    |  __|  |   __/  |         \n");
+//		builder.append("\t _|   _|    \\__,_| \\___| \\__| _| _|   _| \\___| _|         \n\n");
+		System.out.println(builder.toString());
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(connections, phases, super.hashCode());
@@ -70,33 +108,21 @@ public class RunningOrder {
 				.toString();
 	}
 
-	public void executeProfile(String profileName) {
-		execute(profiles.get(profileName).toArray(new String[0]));
-	}
-	
-	public void execute(String... phaseNames) {
-		for (Phase phase : getMatchingPhases(phaseNames)) {
-			factory.autowireBean(phase);
-			phase.execute();
-		}
-	}
-
-	public static class ConnectionCollection extends AbstractNamedCollection<Connection, ConnectionCollection> {
+	public static class ConnectionCollection extends AbstractNamedCollection<ConnectionDefinition, ConnectionCollection> {
 	}
 
 	public static class PhaseCollection extends AbstractNamedCollection<Phase, PhaseCollection> {
-		private transient static Logger log = Logger.getLogger(PhaseCollection.class);
 
 		public PhaseCollection getMatchingPhases(String... phaseNames) {
 			PhaseCollection result = new PhaseCollection();
 			for (String phase : phaseNames) {
 				if (!getElements().containsKey(phase)) {
-					log.debug("Ignoring phase: " + phase + " as not specified in json file.");
+					logger.debug("Ignoring phase: " + phase + " as not specified in json file.");
 				} else {
 					result.put(phase, getElements().get(phase));
 				}
 			}
-			log.debug("Found the following matching phases: " + result.getElements().keySet());
+			logger.info("Found the following matching phases: " + result.getElements().keySet());
 			return result;
 		}
 
