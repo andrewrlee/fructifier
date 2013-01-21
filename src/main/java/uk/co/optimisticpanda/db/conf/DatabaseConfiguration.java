@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import uk.co.optimisticpanda.conf.ConnectionDefinition;
+import uk.co.optimisticpanda.conf.Phase;
 import uk.co.optimisticpanda.conf.RunningOrder;
-import uk.co.optimisticpanda.db.apply.ScriptApplier;
 import uk.co.optimisticpanda.db.apply.DatabaseApplier;
+import uk.co.optimisticpanda.db.apply.ScriptApplier;
 import uk.co.optimisticpanda.db.phase.IncrementalDatabasePhase;
 import uk.co.optimisticpanda.db.phase.SingleScriptDatabasePhase;
-import uk.co.optimisticpanda.runner.RegisteredExtensions.ConnectionRegistration;
-import uk.co.optimisticpanda.runner.RegisteredExtensions.PhaseRegistration;
-import uk.co.optimisticpanda.runner.RegisteredExtensions.RegisterExtension;
+import uk.co.optimisticpanda.runner.RegisteredExtensionsGatherer.RegisterExtension;
+import uk.co.optimisticpanda.runner.RegisteredExtensionsGatherer.RegisteredComponent;
 import uk.co.optimisticpanda.util.TemplateApplier;
-
 /**
  * The spring configuration for database functionality
  */
@@ -27,18 +27,19 @@ public class DatabaseConfiguration {
 	 * Register this extension
 	 * @formatter:off
 	 */
+	@SuppressWarnings("unchecked")
 	@Bean
 	public RegisterExtension registerDatabaseExtension() {
 		return new RegisterExtension()
 				.connectionTypes(
-						new ConnectionRegistration("database", DatabaseConnectionDefinition.class)
+						new RegisteredComponent<ConnectionDefinition>("database", DatabaseConnectionDefinition.class)
 						)
 				.typeAdaptors(
 						new DelimiterLocationTypeAdaptor()
 						)
 				.phaseTypes(
-						new PhaseRegistration("database.incremental.phase", IncrementalDatabasePhase.class),
-						new PhaseRegistration("database.single.script.phase", SingleScriptDatabasePhase.class)
+						new RegisteredComponent<Phase>("database.incremental.phase", IncrementalDatabasePhase.class),
+						new RegisteredComponent<Phase>("database.single.script.phase", SingleScriptDatabasePhase.class)
 						);
 	}
 	/* @formatter:off*/

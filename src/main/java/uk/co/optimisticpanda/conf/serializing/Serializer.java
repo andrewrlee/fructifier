@@ -5,10 +5,8 @@ import java.util.List;
 import org.springframework.core.io.ResourceLoader;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
-import uk.co.optimisticpanda.conf.RunningOrder.PhaseCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.db.phase.DatabasePhase;
-import uk.co.optimisticpanda.runner.RegisteredExtensions;
+import uk.co.optimisticpanda.runner.RegisteredExtensionsGatherer;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -21,65 +19,45 @@ import com.google.gson.reflect.TypeToken;
  * The main serializer that is responsible for parsing a json configuration into
  * a {@link RunningOrder}.
  */
-public class Serializer {
+public class Serializer implements TypeAdapterFactory {
 
 	private final Gson gson;
+	private final List<TypeAdaptorRegistration<?>> adapters = Lists.newArrayList();
 
-	public Serializer(ResourceLoader resourceLoader, RegisteredExtensions registeredExtensions) {
-		this.gson = new GsonBuilder().registerTypeAdapterFactory(new AdapterFactory(resourceLoader, registeredExtensions)).create();
+	public Serializer(ResourceLoader resourceLoader, RegisteredExtensionsGatherer registeredExtensions) {
+		adapters.addAll(registeredExtensions.getAdaptorList());
+		adapters.addAll(defaultTypeAdaptors(resourceLoader, registeredExtensions));
+		this.gson = new GsonBuilder().registerTypeAdapterFactory(this).create();
 	}
 
-	public RunningOrder parseRunningOrder(String json) {
-		return gson.fromJson(json, RunningOrder.class);
-	}
-
-	public PhaseCollection parsePhases(String json) {
-		return gson.fromJson(json, PhaseCollection.class);
-	}
-
-	public String toString(DatabasePhase phase) {
-		return gson.toJson(phase);
-	}
-
-	public String toString(PhaseCollection phases) {
-		return gson.toJson(phases);
-	}
-
-	public String toString(RunningOrder config) {
-		return gson.toJson(config);
-	}
-
-	public static class AdapterFactory implements TypeAdapterFactory {
-
-		private final List<TypeAdaptorRegistration<?>> adapters = Lists.newArrayList();
-
-		public AdapterFactory(ResourceLoader resourceLoader, RegisteredExtensions registeredExtensions) {
-			adapters.addAll(registeredExtensions.getAdaptorList());
-			adapters.addAll(defaultTypeAdaptors(resourceLoader, registeredExtensions));
-		}
-
-		@SuppressWarnings("unchecked")
-		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-			for (TypeAdaptorRegistration<?> typeAdaptor : adapters) {
-				if (typeAdaptor.supplies(type)) {
-					return (TypeAdapter<T>) typeAdaptor.preparedAdapter(gson, this);
-				}
+	@SuppressWarnings("unchecked")
+	public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+		for (TypeAdaptorRegistration<?> typeAdaptor : adapters) {
+			if (typeAdaptor.supplies(type)) {
+				return (TypeAdapter<T>) typeAdaptor.preparedAdapter(gson, this);
 			}
-			return null;
 		}
-		
-		@SuppressWarnings("unchecked")
-		private List<TypeAdaptorRegistration<?>> defaultTypeAdaptors(ResourceLoader resourceLoader, RegisteredExtensions registeredExtensions){
-			return Lists.newArrayList( //
-					new PhaseTypeAdaptor(registeredExtensions), //
-					new PhaseCollectionTypeAdaptor(), //
-					new SimpleTypeAdaptors.OptionalTypeAdaptor(), //
-					new SimpleTypeAdaptors.OptionalFileTypeAdaptor(), //
-					new SimpleTypeAdaptors.FileTypeAdaptor(),//
-					new SimpleTypeAdaptors.ResourceTypeAdaptor(resourceLoader),//
-					new SimpleTypeAdaptors.OptionalResourceTypeAdaptor(resourceLoader),//
-					new ConnectionCollectionTypeAdaptor(registeredExtensions));
-		}
+		return null;
+	}
+
+	public <D> D parse(String json, Class<D> clazz) {
+		return gson.fromJson(json, clazz);
+	}
+
+	public <D> String toString(D object) {
+		return gson.toJson(object);
 	}
 	
+	@SuppressWarnings("unchecked")
+	private List<TypeAdaptorRegistration<?>> defaultTypeAdaptors(ResourceLoader resourceLoader, RegisteredExtensionsGatherer registeredExtensions) {
+		return Lists.newArrayList( //
+				new PhaseTypeAdaptor(registeredExtensions), //
+				new PhaseCollectionTypeAdaptor(), //
+				new SimpleTypeAdaptors.OptionalTypeAdaptor(), //
+				new SimpleTypeAdaptors.OptionalFileTypeAdaptor(), //
+				new SimpleTypeAdaptors.FileTypeAdaptor(),//
+				new SimpleTypeAdaptors.ResourceTypeAdaptor(resourceLoader),//
+				new SimpleTypeAdaptors.OptionalResourceTypeAdaptor(resourceLoader),//
+				new ConnectionCollectionTypeAdaptor(registeredExtensions));
+	}
 }

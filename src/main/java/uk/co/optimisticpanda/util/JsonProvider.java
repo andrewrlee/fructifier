@@ -1,4 +1,4 @@
-package uk.co.optimisticpanda.runner;
+package uk.co.optimisticpanda.util;
 
 import java.util.Properties;
 
@@ -6,7 +6,6 @@ import org.springframework.core.io.Resource;
 
 import com.google.common.base.Supplier;
 
-import uk.co.optimisticpanda.util.ResourceUtils;
 
 public class JsonProvider implements Supplier<String>{
 	private final String json;

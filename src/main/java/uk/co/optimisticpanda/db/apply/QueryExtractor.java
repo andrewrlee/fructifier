@@ -4,9 +4,11 @@ import static org.springframework.util.StringUtils.trimTrailingWhitespace;
 import static uk.co.optimisticpanda.db.apply.QueryExtractor.DelimiterLocation.END_OF_LINE;
 import static uk.co.optimisticpanda.db.apply.QueryExtractor.DelimiterLocation.ON_OWN_LINE;
 
+import java.io.Reader;
 import java.util.Scanner;
 
 import com.google.common.base.Optional;
+import com.google.common.io.Closeables;
 
 public class QueryExtractor {
 	private Optional<String> delimiter;
@@ -24,10 +26,11 @@ public class QueryExtractor {
 		this.delimiterLocation = Optional.fromNullable(separatorLocation);
 	}
 
-	public void visitQueries(String input, QueryVisitor visitor) {
-		int count = 0; 
+	public void visitQueries(Reader reader, QueryVisitor visitor) {
+
+		int count = 0;
 		StringBuilder builder = new StringBuilder();
-		Scanner scanner = new Scanner(input);
+		Scanner scanner = new Scanner(reader);
 		while (scanner.hasNextLine()) {
 			String line = trimTrailingWhitespace(scanner.nextLine());
 
@@ -44,6 +47,7 @@ public class QueryExtractor {
 		if (builder.length() > 0) {
 			visitor.visit(++count, builder.toString());
 		}
+		Closeables.closeQuietly(reader);
 	}
 
 	private String withoutTrailingDelimiter(StringBuilder builder) {
@@ -51,11 +55,8 @@ public class QueryExtractor {
 	}
 
 	private boolean statementEnds(String line) {
-		return 	getDelimiterLocation() == END_OF_LINE && line.endsWith(getDelimiter())
-			|| 
-				getDelimiterLocation() == ON_OWN_LINE && line.equals(getDelimiter());
+		return getDelimiterLocation() == END_OF_LINE && line.endsWith(getDelimiter()) || getDelimiterLocation() == ON_OWN_LINE && line.equals(getDelimiter());
 	}
-
 
 	public String getDelimiter() {
 		return delimiter.or(";");
@@ -64,15 +65,15 @@ public class QueryExtractor {
 	public String getSeparator() {
 		return separator.or(System.getProperty("line.separator"));
 	}
-	
+
 	public DelimiterLocation getDelimiterLocation() {
 		return delimiterLocation.or(DelimiterLocation.END_OF_LINE);
 	}
-	
-	public static interface QueryVisitor{
-		
+
+	public static interface QueryVisitor {
+
 		public void visit(int count, String query);
-		
+
 	}
-	
+
 }

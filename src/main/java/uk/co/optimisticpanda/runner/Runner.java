@@ -9,6 +9,7 @@ import com.google.common.base.Optional;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
 import uk.co.optimisticpanda.db.conf.DatabaseConfiguration;
+import uk.co.optimisticpanda.util.JsonProvider;
 import uk.co.optimisticpanda.util.ResourceUtils;
 
 public class Runner {

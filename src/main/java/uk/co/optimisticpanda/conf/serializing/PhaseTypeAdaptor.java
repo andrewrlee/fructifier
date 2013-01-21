@@ -5,7 +5,7 @@ import java.util.Set;
 
 import uk.co.optimisticpanda.conf.Phase;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.runner.RegisteredExtensions;
+import uk.co.optimisticpanda.runner.RegisteredExtensionsGatherer;
 import uk.co.optimisticpanda.util.ConfigurationException;
 import uk.co.optimisticpanda.util.ReflectionUtil;
 import uk.co.optimisticpanda.util.ReflectionUtil.GetterCallBack;
@@ -19,9 +19,9 @@ import com.google.gson.stream.JsonWriter;
 
 public class PhaseTypeAdaptor extends TypeAdaptorRegistration<Phase> {
 
-	private final RegisteredExtensions registeredExtensions;
+	private final RegisteredExtensionsGatherer registeredExtensions;
 
-	public PhaseTypeAdaptor(RegisteredExtensions registeredExtensions) {
+	public PhaseTypeAdaptor(RegisteredExtensionsGatherer registeredExtensions) {
 		this.registeredExtensions = registeredExtensions;
 	}
 

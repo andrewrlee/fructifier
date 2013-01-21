@@ -11,11 +11,10 @@ import org.springframework.core.io.Resource;
 import uk.co.optimisticpanda.db.conf.JdbcConnectionProvider.JdbcConnection;
 import uk.co.optimisticpanda.db.phase.DatabasePhase;
 import uk.co.optimisticpanda.versioning.ChangeSetAndDeltaVersion;
-import uk.co.optimisticpanda.versioning.ResourceChangeSetAndDeltaVersion;
-import uk.co.optimisticpanda.versioning.ResourceVersionProvider;
 import uk.co.optimisticpanda.versioning.VersionUtils.Difference;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Supplier;
 import com.google.common.collect.Maps;
 
 public class DatabaseApplier {
@@ -27,15 +26,14 @@ public class DatabaseApplier {
 
 	//TODO : handle lastRevision, outputFile, combined template file
 	//TODO : Add default properties for a specific dbms type
-	public void applyUpgrade(DatabasePhase phase, Resource deltaDir, Optional<File> outputFile, Optional<Resource> lastChangeToApply, Resource combineTemplate) {
-		JdbcConnection connection = phase.getConnection();
-		ResourceVersionProvider resourceVersionProvider = new ResourceVersionProvider(deltaDir);
+	public <A extends ChangeSetAndDeltaVersion> void applyUpgrade(DatabasePhase phase, Supplier<List<A>> versionProvider, Optional<File> outputFile, Optional<Resource> lastChangeToApply, Resource combineTemplate) {
+		JdbcConnection connection = phase.getJdbcConnection();
 		
-		Difference<ChangeSetAndDeltaVersion, ResourceChangeSetAndDeltaVersion> difference = connection.getDifferences(resourceVersionProvider);
+		Difference<ChangeSetAndDeltaVersion, A> difference = connection.getDifferences(versionProvider);
 		logger.info("Already applied deltas: " + difference.getAppliedVersions());
 
 		if (difference.sourceHasUnrecognisedAppliedVersions()) {
-			logger.error("The following extra delta's have been applied that we don't know about: " + difference.getUnrecognisedAppliedVersions());
+			logger.error("The following extra delta's have been applied that I don't know about: " + difference.getUnrecognisedAppliedVersions());
 			throw new IllegalStateException("System is in a unrecognised state... exiting..");
 		}
 
@@ -44,20 +42,20 @@ public class DatabaseApplier {
 			return;
 		}
 
-		List<ResourceChangeSetAndDeltaVersion> missing = difference.getVersionsToBeApplied();
+		List<? extends ChangeSetAndDeltaVersion> missing = difference.getVersionsToBeApplied();
 		logger.info("deltas to apply: " + missing);
 		
 		Map<String, Object> model = Maps.newHashMap();
 		model.put("phase", phase);
 		model.put("connectionDefinition", phase.getConnectionDefinition());
 		model.put("scripts",missing);
-		applier.applyScript(connection, model, combineTemplate);
+		applier.applyScript(connection, model, combineTemplate, outputFile);
 	}
 
 	public void applySingleScript(DatabasePhase phase, Resource script) {
 		Map<String, Object> model = Maps.newHashMap();
 		model.put("phase", phase);
 		model.put("connectionDefinition", phase.getConnectionDefinition());
-		applier.applyScript(phase.getConnection(), model, script);
+		applier.applyScript(phase.getJdbcConnection(), model, script, Optional.<File>absent());
 	}
 }

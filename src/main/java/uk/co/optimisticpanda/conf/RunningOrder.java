@@ -77,10 +77,6 @@ public class RunningOrder {
 		builder.append("\t888     888     888  888 888      888    888 888    888 88888888 888     \n");
 		builder.append("\t888     888     Y88b 888 Y88b.    Y88b.  888 888    888 Y8b.     888     \n");
 		builder.append("\t888     888      \"Y88888  \"Y8888P  \"Y888 888 888    888  \"Y8888  888     \n\n");
-//		builder.append("\t  ____|                   |   _)   _| _)                  \n");            
-//		builder.append("\t  |     __|  |   |   __|  __|  |  |    |   _ \\   __|     \n");
-//		builder.append("\t  __|  |     |   |  (     |    |  __|  |   __/  |         \n");
-//		builder.append("\t _|   _|    \\__,_| \\___| \\__| _| _|   _| \\___| _|         \n\n");
 		System.out.println(builder.toString());
 	}
 

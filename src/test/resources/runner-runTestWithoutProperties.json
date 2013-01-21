@@ -12,7 +12,7 @@
     "phases": {
         "createDatabase": {
             "phaseType": "database.single.script.phase",
-            "connectionName" : "root", 
+            "connection" : "root", 
             "script" : "classpath:/test1/scripts/single/create_db.sql",
             "data": {
                 "app_user": "foo",

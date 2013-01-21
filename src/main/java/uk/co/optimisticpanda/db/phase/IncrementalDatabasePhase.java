@@ -1,15 +1,19 @@
 package uk.co.optimisticpanda.db.phase;
 
 import java.io.File;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import uk.co.optimisticpanda.db.apply.DatabaseApplier;
+import uk.co.optimisticpanda.versioning.ResourceChangeSetAndDeltaVersion;
+import uk.co.optimisticpanda.versioning.ResourceVersionProvider;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Supplier;
 
 public class IncrementalDatabasePhase extends DatabasePhase  {
 	
@@ -22,12 +26,13 @@ public class IncrementalDatabasePhase extends DatabasePhase  {
 	private Optional<Resource> lastChangeToApply = Optional.<Resource> absent();
 
 	public void execute() {
+		Supplier<List<ResourceChangeSetAndDeltaVersion>> provider = new ResourceVersionProvider(deltaDir);
 		if (combinedTemplate.isPresent()){
-			applier.applyUpgrade(this, deltaDir, outputFile, lastChangeToApply, combinedTemplate.get());
+			applier.applyUpgrade(this, provider, outputFile, lastChangeToApply, combinedTemplate.get());
 			return;
 		}
 		String dbms = getConnectionDefinition().getDbms();
-		applier.applyUpgrade(this, deltaDir, outputFile, lastChangeToApply, new ClassPathResource("combined." + dbms + ".ftl", this.getClass()));
+		applier.applyUpgrade(this, provider, outputFile, lastChangeToApply, new ClassPathResource("combined." + dbms + ".ftl", this.getClass()));
 		
 	}
 	
@@ -36,7 +41,7 @@ public class IncrementalDatabasePhase extends DatabasePhase  {
 		return Objects.toStringHelper(this.getClass())//
 				.add("name", getName()) //
 				.add("deltaDir", deltaDir) //
-				.add("connectionName", getConnectionName())//
+				.add("connectionName", getConnection())//
 				.add("lastChangeToApply", lastChangeToApply) //
 				.add("combinedTemplate", combinedTemplate) //
 				.add("outputFile", outputFile) //

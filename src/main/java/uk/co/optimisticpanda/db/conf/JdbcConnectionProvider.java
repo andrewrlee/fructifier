@@ -1,11 +1,13 @@
 package uk.co.optimisticpanda.db.conf;
 
+import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -70,9 +72,9 @@ public class JdbcConnectionProvider {
 			return getTemplate().execute(connectionCallback);
 		}
 		
-		public void visitScript(String script, QueryVisitor visitor) {
+		public void visitScript(Resource scriptTemplate, Reader reader, QueryVisitor visitor) {
 			QueryExtractor extractor = new QueryExtractor(definition.getDelimiter(), definition.getSeparator(), definition.getSeparatorLocation());
-			extractor.visitQueries(script, visitor);
+			extractor.visitQueries(reader, visitor);
 		}
 
 		public <A extends ChangeSetAndDeltaVersion> Difference<ChangeSetAndDeltaVersion, A> getDifferences(Supplier<List<A>> resourceVersionProvider) {

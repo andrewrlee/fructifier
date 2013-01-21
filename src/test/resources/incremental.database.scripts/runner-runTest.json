@@ -21,7 +21,7 @@
     "phases": {
         "createDatabase": {
             "phaseType": "database.single.script.phase",
-            "connectionName" : "root", 
+            "connection" : "root", 
             "script" : "classpath:incremental.database.scripts/${create.script}",
             "data": {
                 "app_user": "foo",
@@ -32,7 +32,7 @@
         },
         "applyDeltas": {
             "phaseType": "database.incremental.phase",
-            "connectionName" : "app_user", 
+            "connection" : "app_user", 
             "deltaDir" : "classpath:incremental.database.scripts/${deltas}"
         }
     }

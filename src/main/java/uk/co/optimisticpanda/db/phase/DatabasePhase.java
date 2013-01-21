@@ -15,24 +15,24 @@ import com.google.common.base.Objects;
  */
 public abstract class DatabasePhase extends Phase {
 
-	private String connectionName;
+	private String connection;
 	private transient JdbcConnection jdbcConnection;
 	
 	@Autowired
 	public void setJdbcConnection(JdbcConnectionProvider jdbcProvider) {
-		this.jdbcConnection = jdbcProvider.getJdbcConnection(connectionName);
+		this.jdbcConnection = jdbcProvider.getJdbcConnection(connection);
 	}
 	
-	public void setConnectionName(String connectionName) {
-		this.connectionName = connectionName;
+	public void setConnection(String connectionName) {
+		this.connection= connectionName;
 	}
 
-	public String getConnectionName() {
-		return connectionName;
+	public String getConnection() {
+		return connection;
 	}
 
 	@IgnoreForSerializing
-	public JdbcConnection getConnection(){
+	public JdbcConnection getJdbcConnection(){
 		return jdbcConnection;
 	}
 	
@@ -43,7 +43,7 @@ public abstract class DatabasePhase extends Phase {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(super.hashCode(), connectionName);
+		return Objects.hashCode(super.hashCode(), connection);
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public abstract class DatabasePhase extends Phase {
 			return false;
 		final DatabasePhase other = (DatabasePhase) obj;
 		return super.equals(obj) //
-				&& Objects.equal(this.connectionName, other.connectionName);
+				&& Objects.equal(this.connection, other.connection);
 		}
 }

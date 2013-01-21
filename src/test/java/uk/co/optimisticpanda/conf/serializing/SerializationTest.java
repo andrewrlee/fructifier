@@ -32,8 +32,8 @@ import uk.co.optimisticpanda.db.phase.DatabasePhase;
 import uk.co.optimisticpanda.db.phase.IncrementalDatabasePhase;
 import uk.co.optimisticpanda.db.phase.SingleScriptDatabasePhase;
 import uk.co.optimisticpanda.runner.BaseConfiguration;
-import uk.co.optimisticpanda.runner.JsonProvider;
-import uk.co.optimisticpanda.runner.RegisteredExtensions;
+import uk.co.optimisticpanda.runner.RegisteredExtensionsGatherer;
+import uk.co.optimisticpanda.util.JsonProvider;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,7 +43,7 @@ import com.google.common.collect.Maps;
 public class SerializationTest {
 
 	@Autowired
-	private RegisteredExtensions registeredExtensions;
+	private RegisteredExtensionsGatherer registeredExtensions;
 
 	@Autowired
 	private ResourceLoader loader;
@@ -59,7 +59,7 @@ public class SerializationTest {
 		RunningOrder config = createConfig(createPhase());
 		try {
 			String serialized = serializer.toString(config);
-			RunningOrder readConfig = serializer.parseRunningOrder(serialized);
+			RunningOrder readConfig = serializer.parse(serialized, RunningOrder.class);
 			assertThat(readConfig).isEqualTo(config);
 
 		} catch (RuntimeException e) {
@@ -76,7 +76,7 @@ public class SerializationTest {
 
 		String serialized = serializer.toString(phases);
 
-		PhaseCollection readPhases = serializer.parsePhases(serialized);
+		PhaseCollection readPhases = serializer.parse(serialized, PhaseCollection.class);
 
 		assertThat(phases.getElements()).hasSize(1);
 		Phase deserializedPhase = phases.next();
@@ -89,7 +89,7 @@ public class SerializationTest {
 	public void testDeSerializeMultiplePhases() {
 		DatabasePhase phase = createPhase();
 		SingleScriptDatabasePhase phase2 = new SingleScriptDatabasePhase();
-		phase2.setConnectionName("db1");
+		phase2.setConnection("db1");
 		phase2.setName("02");
 		phase2.script = loader.getResource("file:src/test/resources/test1/scripts/single/create_db.sql");
 		PhaseCollection phases = new PhaseCollection().put("01", phase).put("02", phase2);
@@ -97,7 +97,7 @@ public class SerializationTest {
 		config.setPhases(phases);
 
 		String serialized = serializer.toString(config);
-		config = serializer.parseRunningOrder(serialized);
+		config = serializer.parse(serialized, RunningOrder.class);
 		phases = config.getMatchingPhases("01", "02");
 
 		assertThat(phases.getElements()).hasSize(2);
@@ -114,7 +114,7 @@ public class SerializationTest {
 	public void testProfiles() {
 		DatabasePhase phase = createPhase();
 		SingleScriptDatabasePhase phase2 = new SingleScriptDatabasePhase();
-		phase2.setConnectionName("db1");
+		phase2.setConnection("db1");
 		phase2.setName("02");
 		phase2.script = loader.getResource("file:src/test/resources/test1/scripts/single/create_db.sql");
 		PhaseCollection phases = new PhaseCollection().put("01", phase).put("02", phase2);
@@ -129,7 +129,7 @@ public class SerializationTest {
 		
 		String serialized = serializer.toString(config);
 		
-		config = serializer.parseRunningOrder(serialized);
+		config = serializer.parse(serialized, RunningOrder.class);
 		assertThat(config.getProfiles()) //
 				.contains(entry("dev",Lists.newArrayList("teardown","createChangeLog","apply", "testData")))
 				.contains(entry("prodSetUp",Lists.newArrayList("teardown","createChangeLog","apply")))
@@ -174,7 +174,7 @@ public class SerializationTest {
 		map.put("fooMap", Collections.singletonMap("foo", "blum"));
 		map.put("fooPrim", "bar");
 		phase.setData(map);
-		phase.setConnectionName("name");
+		phase.setConnection("name");
 		return phase;
 	}
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import uk.co.optimisticpanda.conf.ConnectionDefinition;
 import uk.co.optimisticpanda.conf.RunningOrder.ConnectionCollection;
 import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
-import uk.co.optimisticpanda.runner.RegisteredExtensions;
+import uk.co.optimisticpanda.runner.RegisteredExtensionsGatherer;
 import uk.co.optimisticpanda.util.ConfigurationException;
 
 import com.google.gson.JsonElement;
@@ -19,9 +19,9 @@ import com.google.gson.stream.JsonWriter;
 
 public class ConnectionCollectionTypeAdaptor extends TypeAdaptorRegistration<ConnectionCollection> {
 
-	private final RegisteredExtensions registeredExtensions;
+	private final RegisteredExtensionsGatherer registeredExtensions;
 
-	public ConnectionCollectionTypeAdaptor(RegisteredExtensions registeredExtensions) {
+	public ConnectionCollectionTypeAdaptor(RegisteredExtensionsGatherer registeredExtensions) {
 		this.registeredExtensions = registeredExtensions;
 	}
 

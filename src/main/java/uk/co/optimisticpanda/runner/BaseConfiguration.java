@@ -7,6 +7,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import uk.co.optimisticpanda.conf.RunningOrder;
 import uk.co.optimisticpanda.conf.serializing.Serializer;
+import uk.co.optimisticpanda.util.JsonProvider;
 
 /**
  * We wire up this and other child contexts. After properties are set we provide
@@ -30,16 +31,16 @@ public class BaseConfiguration {
 	 */
 	@Bean
 	public RunningOrder runningOrder() {
-		Serializer serializer = new Serializer(resourceLoader, registeredExtensions());
-		return serializer.parseRunningOrder(jsonProvider.get());
+		Serializer serializer = new Serializer(resourceLoader, registeredExtensionsGatherer());
+		return serializer.parse(jsonProvider.get(), RunningOrder.class);
 	}
 
 	/**
 	 * Gathers all registered extensions from child contexts.
 	 */
 	@Bean
-	public RegisteredExtensions registeredExtensions() {
-		return new RegisteredExtensions();
+	public RegisteredExtensionsGatherer registeredExtensionsGatherer() {
+		return new RegisteredExtensionsGatherer();
 	}
 
 }

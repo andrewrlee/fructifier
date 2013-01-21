@@ -1,7 +1,9 @@
 package uk.co.optimisticpanda.runner;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -15,9 +17,10 @@ import uk.co.optimisticpanda.conf.TypeAdaptorRegistration;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 //A class that gathers all registered extensions
-public class RegisteredExtensions implements InitializingBean {
+public class RegisteredExtensionsGatherer implements InitializingBean {
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -27,15 +30,9 @@ public class RegisteredExtensions implements InitializingBean {
 	
 	public void afterPropertiesSet() throws Exception {
 		for (RegisterExtension extension : applicationContext.getBeansOfType(RegisterExtension.class).values()) {
-			for (ConnectionRegistration registration : extension.connections) {
-				nameToConnectionType.put(registration.getConnectionName(), registration.getConnectionType());
-			}
-			for (PhaseRegistration registration : extension.phases) {
-				nameToPhaseType.put(registration.getPhaseName(), registration.getPhaseType());
-			}
-			for (TypeAdaptorRegistration<?> registration : extension.typeAdaptors) {
-				adaptorList.add(registration);
-			}
+			nameToConnectionType.putAll(extension.getConnectionTypes());
+			nameToPhaseType.putAll(extension.getPhaseTypes());
+			adaptorList.addAll(extension.typeAdaptors);
 		}
 	}
 
@@ -47,8 +44,8 @@ public class RegisteredExtensions implements InitializingBean {
 		return nameToPhaseType.inverse().get(type);
 	}
 	
-	public Class<? extends Phase> getPhaseTypeForName(String name) {
-		return nameToPhaseType.get(name);
+	public Class<? extends Phase> getPhaseTypeForName(String phaseName) {
+		return nameToPhaseType.get(phaseName);
 	}
 	
 	public Set<String> getPhaseNames() {
@@ -58,6 +55,7 @@ public class RegisteredExtensions implements InitializingBean {
 	public Class<? extends ConnectionDefinition> getConnectionTypeForName(String name) {
 		return nameToConnectionType.get(name);
 	}
+	
 	public String getByConnectionType(Class<? extends Phase> type) {
 		return nameToConnectionType.inverse().get(type);
 	}
@@ -67,16 +65,16 @@ public class RegisteredExtensions implements InitializingBean {
 	}
 
 	public static class RegisterExtension {
-		public List<PhaseRegistration> phases;
-		public List<ConnectionRegistration> connections;
+		public List<RegisteredComponent<Phase>> phases;
+		public List<RegisteredComponent<ConnectionDefinition>> connections;
 		public List<TypeAdaptorRegistration<?>> typeAdaptors;
 
-		public RegisterExtension phaseTypes(PhaseRegistration... phases) {
+		public RegisterExtension phaseTypes(RegisteredComponent<Phase>... phases) {
 			this.phases = Arrays.asList(phases);
 			return this;
 		}
 
-		public RegisterExtension connectionTypes(ConnectionRegistration... connections) {
+		public RegisterExtension connectionTypes(RegisteredComponent<ConnectionDefinition>... connections) {
 			this.connections = Arrays.asList(connections);
 			return this;
 		}
@@ -85,43 +83,41 @@ public class RegisteredExtensions implements InitializingBean {
 			this.typeAdaptors = Arrays.asList(typeAdaptors);
 			return this;
 		}
-	}
-
-	public static class PhaseRegistration {
-
-		private final String phaseName;
-		private final Class<? extends Phase> phaseType;
-
-		public PhaseRegistration(String phaseName, Class<? extends Phase> phaseType) {
-			this.phaseName = phaseName;
-			this.phaseType = phaseType;
+		
+		public Map<String,Class<ConnectionDefinition>> getConnectionTypes(){
+			return getMap(connections);
 		}
-
-		public String getPhaseName() {
-			return phaseName;
+		
+		public Map<String,Class<Phase>> getPhaseTypes(){
+			return getMap(phases);
 		}
-
-		public Class<? extends Phase> getPhaseType() {
-			return phaseType;
+		
+		@SuppressWarnings("unchecked")
+		private <D> Map<String, Class<D>> getMap(List<RegisteredComponent<D>> elems){
+			HashMap<String, Class<D>> map = Maps.newHashMap();
+			for (RegisteredComponent<D> registeredComponent : elems) {
+				map.put(registeredComponent.name, (Class<D>) registeredComponent.type);
+			}
+			return map;
 		}
 	}
 
-	public static class ConnectionRegistration {
+	public static class RegisteredComponent<T> {
 
-		private final String connectionName;
-		private final Class<? extends ConnectionDefinition> connectionType;
+		private final String name;
+		private final Class<? extends T> type;
 
-		public ConnectionRegistration(String connectionName, Class<? extends ConnectionDefinition> connectionType) {
-			this.connectionName = connectionName;
-			this.connectionType = connectionType;
+		public RegisteredComponent(String name, Class<? extends T> type) {
+			this.name = name;
+			this.type = type;
 		}
 
-		public String getConnectionName() {
-			return connectionName;
+		public String getName() {
+			return name;
 		}
 
-		public Class<? extends ConnectionDefinition> getConnectionType() {
-			return connectionType;
+		public Class<? extends T> getType() {
+			return type;
 		}
 	}
 }

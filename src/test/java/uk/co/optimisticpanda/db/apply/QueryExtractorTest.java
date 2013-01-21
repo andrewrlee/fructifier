@@ -2,6 +2,7 @@ package uk.co.optimisticpanda.db.apply;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.io.StringReader;
 import java.util.List;
 
 import org.junit.Before;
@@ -99,7 +100,7 @@ public class QueryExtractorTest {
 
 	private List<String> extract(QueryExtractor extractor, String text){
 		QueryCollection collection = new QueryCollection();
-		extractor.visitQueries(text, collection);
+		extractor.visitQueries(new StringReader(text), collection);
 		return collection.queries;
 	}
 	
