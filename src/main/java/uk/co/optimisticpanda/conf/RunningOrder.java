@@ -1,5 +1,6 @@
 package uk.co.optimisticpanda.conf;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +49,11 @@ public class RunningOrder {
 		this.profiles = profiles;
 	}
 
+	public LinkedHashMap<String, Phase> getPhases() {
+		return phases.getElements();
+	}
+	
 	public void executeProfile(String profileName) {
-		printBanner();
 		logger.info("Executing profile: " + profileName);
 		if (!profiles.containsKey(profileName)) {
 			logger.error("No profile named: " + profileName + ", possible options: " + profiles.keySet());
@@ -64,20 +68,6 @@ public class RunningOrder {
 			logger.info("Executing phase: " + phase);
 			phase.execute();
 		}
-	}
-
-	private void printBanner() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("\n\n");
-		builder.append("\t8888888888                        888    d8b  .d888 d8b\n");
-		builder.append("\t888                               888    Y8P d88P\"  Y8P                  \n");
-		builder.append("\t888                               888        888                         \n");
-		builder.append("\t8888888 888d888 888  888  .d8888b 888888 888 888888 888  .d88b.  888d888 \n");
-		builder.append("\t888     888P\"   888  888 d88P\"    888    888 888    888 d8P  Y8b 888P\"   \n");
-		builder.append("\t888     888     888  888 888      888    888 888    888 88888888 888     \n");
-		builder.append("\t888     888     Y88b 888 Y88b.    Y88b.  888 888    888 Y8b.     888     \n");
-		builder.append("\t888     888      \"Y88888  \"Y8888P  \"Y888 888 888    888  \"Y8888  888     \n\n");
-		System.out.println(builder.toString());
 	}
 
 	@Override

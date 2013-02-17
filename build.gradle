@@ -12,6 +12,7 @@ dependencies {
 			'org.springframework:spring-jdbc:3.1.1.RELEASE',
 			'cglib:cglib-nodep:2.2.2',
 			'mysql:mysql-connector-java:5.1.21',
+			'com.beust:jcommander:1.30',
 			)
 
 	compile(group: 'log4j', name: 'log4j', version: '1.2.15'){
