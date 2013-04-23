@@ -1,2 +1,45 @@
 fructifier
 ==========
+
+
+```json
+{
+    "profiles": {
+        "rebuild": [ "createDatabase", "applyDeltas" ],
+        "update":  [ "applyDeltas" ]
+    },
+    "connections": {
+        "root": {
+            "connectionType": "database",
+            "driver": "com.mysql.jdbc.Driver",
+            "connectionUrl" : "jdbc:mysql://localhost:3306/", "dbms": "mysql", 
+            "user": "root", "password": ""
+        },
+        "app_user": {
+            "connectionType": "database",
+            "driver": "com.mysql.jdbc.Driver",
+            "connectionUrl" : "jdbc:mysql://localhost:3306/bar", "dbms": "mysql", 
+            "user": "foo", "password": "foo",
+            "separator" : "\n" , "delimiter" : ";"
+        }
+    },
+    "phases": {
+        "createDatabase": {
+            "phaseType": "database.single.script.phase",
+            "connection" : "root", 
+            "script" : "classpath:incremental.database.scripts/${create.script}",
+            "data": {
+                "app_user": "foo",
+                "app_password": "foo",
+                "database" : "bar",
+                "host" : "localhost"
+            }
+        },
+        "applyDeltas": {
+            "phaseType": "database.incremental.phase",
+            "connection" : "app_user", 
+            "deltaDir" : "classpath:incremental.database.scripts/${deltas}"
+        }
+    }
+}
+```
