@@ -15,6 +15,7 @@ Features:
 * Has the following phases pre-packaged (with placeholder support):
     * Incremental Database phase
     * Run arbitrary SQL script
+* Specify own gson adaptors to allow unmarshalling of custom configuration.
 
 Command line options:
 --------------------
