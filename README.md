@@ -18,10 +18,11 @@ Command line options:
 --------------------
 show profiles  - List each profile and the list of phases it contains. 
 show phases    - List the name of each phase and the implementing class
-show build     - 
-show help
+show build     - Print the build script file 
+show help      - Print usage
+run ([-phases <phase1, phase2, ...>] | [-profile <profile to run>])
 
-Example config:
+Example config/buildscript:
 ---------------
 
 ```json
