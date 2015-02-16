@@ -1,7 +1,9 @@
 fructifier
 ==========
 
-Toy project. Will run a series of phases.
+Toy project. 
+
+Will run a series of phases... to do "stuff"... somewhere...
 
 Features:
 ---------
@@ -89,7 +91,7 @@ public class DatabaseConfiguration {
                     )
                     .typeAdaptors(
                         new DelimiterLocationTypeAdaptor()
-                        )
+                    )
                     .phaseTypes(
                         new RegisteredComponent<Phase>("database.incremental.phase", IncrementalDatabasePhase.class),
                         new RegisteredComponent<Phase>("database.single.script.phase", SingleScriptDatabasePhase.class)
