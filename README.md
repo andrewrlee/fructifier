@@ -26,7 +26,7 @@ show build     - Print the build script file
 
 show help      - Print usage
 
-run ([-phases <phase1, phase2, ...>] | [-profile <profile to run>])
+run [-phases &lt;phase1, phase2, ...&gt;] | [-profile &lt;profile to run&gt;]
 
 Example config/buildscript:
 ---------------
